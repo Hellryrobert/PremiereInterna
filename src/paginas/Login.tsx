@@ -1,6 +1,28 @@
 import "./Css/Login.css";
 import Logo from "../assets/Première Santé.png";
+import { ChangeEvent, useState } from "react";
+import { Service } from "../Service";
+
 export const Login = () => {
+  const [Usuario, setUsuario] = useState<string>("");
+  const [Senha, setSenha] = useState<string>("");
+
+  const onChangeUsuario = (ev: ChangeEvent<HTMLInputElement>) => {
+    const newValue = ev.target.value;
+    setUsuario(newValue);
+  };
+
+  const onChangeSenha = (ev: ChangeEvent<HTMLInputElement>) => {
+    const newValue = ev.target.value;
+    setSenha(newValue);
+  };
+
+  const entrar = () => {
+    sessionStorage.setItem("Usuario", Usuario);
+    sessionStorage.setItem("Senha", Senha);
+    Service.getMyUsuario(Usuario);
+  };
+
   return (
     <>
       <div className="row">
@@ -18,10 +40,13 @@ export const Login = () => {
             <form className="p-4 p-md-5">
               <div className="form-floating">
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
                   id="inputEmail"
+                  name="email"
                   placeholder="Email"
+                  value={Usuario}
+                  onChange={onChangeUsuario}
                 />
                 <label htmlFor="inputEmail">Email</label>
               </div>
@@ -30,7 +55,10 @@ export const Login = () => {
                   type="password"
                   className="form-control"
                   id="inputPassword"
+                  name="senha"
                   placeholder="Senha"
+                  value={Senha}
+                  onChange={onChangeSenha}
                 />
                 <label htmlFor="inputPassword">Senha</label>
               </div>
@@ -38,8 +66,10 @@ export const Login = () => {
               <button
                 id="btncontato"
                 className="btn btn-info rounded-pill px-3"
+                onClick={entrar}
+                type="button"
               >
-                <a href="Admin">Entrar</a>
+                Entrar
               </button>
             </form>
           </div>

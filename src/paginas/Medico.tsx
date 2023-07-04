@@ -1,25 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
+import { Service } from "../Service";
+import { IMedico } from "../Models/IMedico";
 
 export const Medico = function () {
   const navigate = useNavigate();
-  const [listaMedicos, setListaMedicos] = useState([
-    {
-      nomeMedico: "Hellry",
-      dataNascimento: new Date(2022, 3, 27),
-      idMedico: 1,
-      idade: 76,
-    },
-    {
-      nomeMedico: "Lucas",
-      dataNascimento: new Date(2022, 6, 27),
-      idMedico: 2,
-    },
-  ]);
-  const encaminharParaCadastro = (idMedico?: number) => {
-    return navigate("/CadastroMedico?" + idMedico);
+  const [listaMedicos, setListaMedicos] = useState<IMedico[]>([]);
+  const encaminharParaCadastro = (infoMedico?: IMedico) => {
+    return navigate("/CadastroMedico?", {
+      state: { ...infoMedico, senha: undefined },
+    });
   };
+
+  useEffect(() => {
+    document.title = "Médico";
+    Service.getMedicos().then((res) => {
+      setListaMedicos(res.data);
+    });
+  }, []);
+
+  const apagar = (idMedico?: Number) => {
+    if (window.confirm("Deseja realmente deletar este médico? " + idMedico)) {
+      Service.deleteMedicos(idMedico)
+        .then(() => {
+          window.alert("Excluido com sucesso");
+          Service.getMedicos().then((res) => {
+            setListaMedicos(res.data);
+          });
+        })
+        .catch((err) =>
+          window.alert("Erro:" + JSON.stringify(err?.response?.data))
+        );
+    }
+  };
+
   return (
     <>
       <Cabecalho nomeTela="Dados Médico"></Cabecalho>
@@ -37,17 +52,17 @@ export const Medico = function () {
           {listaMedicos.map(function (Medico) {
             return (
               <tr>
-                <td>{Medico.nomeMedico}</td>
-                <td>{Medico.dataNascimento.toLocaleDateString()}</td>
+                <td>{Medico.nome}</td>
+                <td>{Medico.crm_num}</td>
                 <td>
-                  <button
-                    onClick={() => encaminharParaCadastro(Medico.idMedico)}
-                  >
+                  <button onClick={() => encaminharParaCadastro(Medico)}>
                     Alterar
                   </button>
                 </td>
                 <td>
-                  <button>Excluir Médico</button>
+                  <button onClick={() => apagar(Medico.id)}>
+                    Excluir Médico
+                  </button>
                 </td>
               </tr>
             );

@@ -1,8 +1,27 @@
+import { useState } from "react";
+import { IProntuario } from "../Models/IProntuario";
+import { Service } from "../Service";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import { DadosConsulta } from "./Componentes/DadosConsulta";
 import { DadosPaciente } from "./Componentes/DadosPaciente";
 
 export const PesquisarProntuario = () => {
+  const [prontuario, setProntuario] = useState<IProntuario>();
+  const registrar = () => {
+    if (
+      prontuario &&
+      window.confirm(
+        "Deseja realmente registrar este Paciente? " +
+          JSON.stringify(prontuario)
+      )
+    ) {
+      Service.PostProntuario(prontuario)
+        .then(() => window.alert("Atualiazado com sucesso"))
+        .catch((err) =>
+          window.alert("Erro:" + JSON.stringify(err?.response?.data))
+        );
+    }
+  };
   return (
     <>
       <Cabecalho nomeTela="Pesquisar Protuário"> </Cabecalho>
@@ -39,3 +58,6 @@ export const PesquisarProntuario = () => {
     </>
   );
 };
+function validate() {
+  throw new Error("Function not implemented.");
+}

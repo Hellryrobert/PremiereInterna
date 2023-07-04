@@ -5,7 +5,9 @@ export const Cabecalho = (props: any) => {
     <>
       <div className="row">
         <div className="col-2">
-          <img src={Logo} alt="Logo do Site" title="Logo do Site" />
+          <a href="/admin">
+            <img src={Logo} alt="Logo do Site" title="Logo do Site" />
+          </a>
         </div>
 
         <div className="col-10">{props.nomeTela}</div>

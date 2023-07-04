@@ -1,23 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/ControleConsulta.css";
+import { Service } from "../Service";
+import { IConsulta } from "../Models/IConsulta";
 
 export const ControleConsulta = function () {
   const navigate = useNavigate();
-  const [listaConsulta, setListaControleConsulta] = useState([
-    {
-      nomePaciente: "Hellry",
-      dataConsulta: new Date(2022, 3, 27),
-      idConsulta: 1,
-      idade: 76,
-    },
-    {
-      nomePaciente: "Lucas",
-      dataConsulta: new Date(2022, 6, 27),
-      idConsulta: 2,
-    },
-  ]);
+  const [listaConsulta, setListaControleConsulta] = useState<IConsulta[]>([]);
+
+  useEffect(() => {
+    Service.getConsulta().then((res) => {
+      setListaControleConsulta(res.data);
+    });
+  }, []);
+
   const encaminharParaCriarConsulta = (idCriarConsulta?: number) => {
     return navigate("/CriarConsulta?" + idCriarConsulta);
   };
@@ -63,6 +60,7 @@ export const ControleConsulta = function () {
         <thead>
           <tr>
             <th>Nome Paciente</th>
+            <th>Nome do Médico</th>
             <th>Data da Consulta</th>
             <th>Alterar</th>
             <th>Excluir Consulta</th>
@@ -71,9 +69,11 @@ export const ControleConsulta = function () {
         <tbody>
           {listaConsulta.map(function (ControleConsulta) {
             return (
-              <tr>
-                <td>{ControleConsulta.nomePaciente}</td>
-                <td>{ControleConsulta.dataConsulta.toLocaleDateString()}</td>
+              <tr key={ControleConsulta.id_consulta}>
+                <td>{ControleConsulta.nome_paciente}</td>
+                <td>{ControleConsulta.nome_medico}</td>
+
+                <td>{ControleConsulta.data_consulta?.toLocaleDateString()}</td>
 
                 <td>
                   <button onClick={() => encaminharParaRemarcarConsulta()}>

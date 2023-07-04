@@ -13,7 +13,7 @@ const Funcionarios = function () {
 
   const encaminharParaCadastro = (infoFuncionario?: IFuncionario) => {
     return navigate("/CadastroFuncionario?", {
-      state: infoFuncionario,
+      state: { ...infoFuncionario, senha: undefined },
     });
   };
 
@@ -21,7 +21,21 @@ const Funcionarios = function () {
     Service.getFuncionarios().then((res) => {
       setListaFuncionarios(res.data);
     });
-  });
+  }, []);
+
+  const apagar = (Idfuncionario?: Number) => {
+    if (
+      window.confirm(
+        "Deseja realmente deletar este Funcionário? " + Idfuncionario
+      )
+    ) {
+      Service.deleteFuncionarios(Idfuncionario)
+        .then(() => window.alert("Excluido com sucesso"))
+        .catch((err) =>
+          window.alert("Erro:" + JSON.stringify(err?.response?.data))
+        );
+    }
+  };
 
   return (
     <>
@@ -44,14 +58,16 @@ const Funcionarios = function () {
             return (
               <tr>
                 <td>{funcionario.nome}</td>
-                <td>{funcionario.data_nascimento[0]}</td>
+                <td>{funcionario.data_nascimento}</td>
                 <td>
                   <button onClick={() => encaminharParaCadastro(funcionario)}>
                     Alterar
                   </button>
                 </td>
                 <td>
-                  <button>Excluir Funcionário</button>
+                  <button onClick={() => apagar(funcionario?.id)}>
+                    Excluir Funcionário
+                  </button>
                 </td>
                 <td>
                   <button>Pesquisar</button>

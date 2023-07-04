@@ -1,46 +1,139 @@
-export const DadosPaciente = () => {
+import { ChangeEvent, ChangeEventHandler } from "react";
+import { IPaciente } from "../../Models/IPaciente";
+import { Service } from "../../Service";
+
+interface IPropriedades {
+  paciente?: IPaciente;
+  onPacienteChange?: (paciente: IPaciente) => void;
+}
+
+export const DadosPaciente: React.FC<IPropriedades> = ({
+  paciente,
+  onPacienteChange,
+}) => {
+  const onChange = (
+    ev: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+  ) => {
+    const objPaciente = paciente ?? {};
+
+    const newValue = ev.target.value;
+    const field = ev.target.name;
+
+    const newObject = {
+      ...objPaciente,
+      [field]: newValue,
+    };
+
+    if (onPacienteChange) onPacienteChange(newObject);
+  };
+
+  const handleChangeTel = (event: any) => {
+    const Tel = event.target.value.replace(/\D/g, "");
+    const telWithMask = Tel.replace(
+      /(\d{2})(9)(\d{4})(\d{4})/,
+      "($1) $2 $3-$4"
+    );
+    const newValue = telWithMask;
+    const field = event.target.name;
+
+    const newObject = {
+      ...paciente,
+      [field]: newValue,
+    };
+
+    if (onPacienteChange) onPacienteChange(newObject);
+    // Use cpfWithMask as needed (e.g., update state or perform further operations)
+  };
+
+  const handleChangeCPF = (event: any) => {
+    const cpf = event.target.value.replace(/\D/g, "");
+    const cpfWithMask = cpf.replace(
+      /(\d{3})(\d{3})(\d{3})(\d{2})/,
+      "$1.$2.$3-$4"
+    );
+    const newValue = cpfWithMask;
+    const field = event.target.name;
+
+    const newObject = {
+      ...paciente,
+      [field]: newValue,
+    };
+
+    if (onPacienteChange) onPacienteChange(newObject);
+    // Use cpfWithMask as needed (e.g., update state or perform further operations)
+  };
+
   return (
     <>
       <form className="row g-3">
-        <div className="col-md-4">
+        <div className="col-md-3">
           <label htmlFor="inputNomel4" className="form-label">
             Nome completo
           </label>
-          <input type="nome" className="form-control" id="inputNome4" />
+          <input
+            name="nome"
+            type="text"
+            value={paciente?.nome}
+            className="form-control"
+            id="inputNome4"
+            onChange={onChange}
+          />
         </div>
+
         <div className="col-md-2">
           <label htmlFor="inputCpf4" className="form-label">
             CPF
           </label>
-          <input type="cpf" className="form-control" id="inputCpf4" />
-        </div>
-
-        <div className="col-md-2">
-          <label htmlFor="inputRg" className="form-label">
-            RG
-          </label>
-          <input type="rg" className="form-control" id="inputRg" />
+          <input
+            name="cpf"
+            type="text"
+            value={paciente?.cpf}
+            className="form-control"
+            id="inputCpf4"
+            onChange={handleChangeCPF}
+          />
         </div>
 
         <div className="col-md-2">
           <label htmlFor="inputDn" className="form-label">
             Data de Nascimento
           </label>
-          <input type="dn" className="form-control" id="inputDn" />
+          <input
+            name="data_nascimento"
+            type="date"
+            value={paciente?.data_nascimento}
+            className="form-control"
+            id="inputDn"
+            onChange={onChange}
+          />
         </div>
 
         <div className="col-md-2">
           <label htmlFor="inputPassaporte" className="form-label">
             Passaporte
           </label>
-          <input type="text" className="form-control" id="inputPassaporte" />
+          <input
+            name="passaporte"
+            type="text"
+            value={paciente?.passaporte}
+            className="form-control"
+            id="inputPassaporte"
+            onChange={onChange}
+          />
         </div>
 
         <div className="col-md-2">
           <label htmlFor="inputGenero" className="form-label">
             Genero
           </label>
-          <input type="text" className="form-control" id="inputGenero" />
+          <input
+            name="genero"
+            type="text"
+            value={paciente?.genero}
+            className="form-control"
+            id="inputGenero"
+            onChange={onChange}
+          />
         </div>
 
         <div className="col-4">
@@ -48,10 +141,12 @@ export const DadosPaciente = () => {
             Email
           </label>
           <input
+            name="email"
             type="text"
+            value={paciente?.email}
             className="form-control"
             id="inputEmail"
-            placeholder=""
+            onChange={onChange}
           />
         </div>
 
@@ -60,9 +155,12 @@ export const DadosPaciente = () => {
             Nome Responsável
           </label>
           <input
+            name="nome_responsavel"
             type="text"
+            value={paciente?.nome_responsavel}
             className="form-control"
             id="inputNomeResponsavel"
+            onChange={onChange}
           />
         </div>
 
@@ -71,9 +169,12 @@ export const DadosPaciente = () => {
             CPF Responsável
           </label>
           <input
+            name="cpf_responsavel"
             type="text"
+            value={paciente?.cpf_responsavel}
             className="form-control"
             id="inputCpfResponsavel"
+            onChange={handleChangeCPF}
           />
         </div>
 
@@ -81,7 +182,13 @@ export const DadosPaciente = () => {
           <label htmlFor="inputplanoSaude" className="form-label">
             Plano de Saúde
           </label>
-          <select id="inputplanoSaude" className="form-select">
+          <select
+            name="plano_saude"
+            id="inputplanoSaude"
+            value={paciente?.plano_saude}
+            className="form-select"
+            onChange={onChange}
+          >
             <option selected>Selecionar...</option>
             <option>São Camilo</option>
             <option>Unimed Fortaleza</option>
@@ -98,14 +205,28 @@ export const DadosPaciente = () => {
           <label htmlFor="inputnumPlano" className="form-label">
             Número Plano
           </label>
-          <input type="text" className="form-control" id="inputnumPlano" />
+          <input
+            name="num_plano"
+            type="number"
+            value={paciente?.num_plano}
+            className="form-control"
+            id="inputnumPlano"
+            onChange={onChange}
+          />
         </div>
 
         <div className="col-md-2">
           <label htmlFor="inputvalidadePlano" className="form-label">
             Validade do Plano
           </label>
-          <input type="text" className="form-control" id="inputvalidadePlano" />
+          <input
+            name="validade_plano"
+            type="date"
+            value={paciente?.validade_plano}
+            className="form-control"
+            id="inputvalidadePlano"
+            onChange={onChange}
+          />
         </div>
 
         <div className="col-8">
@@ -113,24 +234,40 @@ export const DadosPaciente = () => {
             Endereço
           </label>
           <input
+            name="endereco"
             type="text"
+            value={paciente?.endereco}
             className="form-control"
             id="inputAddress"
             placeholder="Logradouro, Número e Complemento"
+            onChange={onChange}
           />
         </div>
 
-        <div className="col-md-4">
+        <div className="col-md-2">
           <label htmlFor="inputCidade" className="form-label">
             Cidade
           </label>
-          <input type="text" className="form-control" id="inputCidade" />
+          <input
+            name="cidade"
+            type="text"
+            value={paciente?.cidade}
+            className="form-control"
+            id="inputCidade"
+            onChange={onChange}
+          />
         </div>
         <div className="col-md-2">
           <label htmlFor="inputEstado" className="form-label">
             Estado
           </label>
-          <select id="inputEstado" className="form-select">
+          <select
+            name="estado"
+            id="inputEstado"
+            value={paciente?.estado}
+            className="form-select"
+            onChange={onChange}
+          >
             <option selected>Selecionar...</option>
             <option>AC</option>
             <option>AL</option>
@@ -165,20 +302,41 @@ export const DadosPaciente = () => {
           <label htmlFor="inputCep" className="form-label">
             CEP
           </label>
-          <input type="text" className="form-control" id="inputCep" />
+          <input
+            name="cep"
+            type="text"
+            value={paciente?.cep}
+            className="form-control"
+            id="inputCep"
+            onChange={onChange}
+          />
         </div>
         <div className="col-md-3">
           <label htmlFor="inputBairro" className="form-label">
             Bairro
           </label>
-          <input type="text" className="form-control" id="inputBairro" />
+          <input
+            name="bairro"
+            type="text"
+            value={paciente?.bairro}
+            className="form-control"
+            id="inputBairro"
+            onChange={onChange}
+          />
         </div>
 
         <div className="col-md-2">
           <label htmlFor="inputTel" className="form-label">
             Celular
           </label>
-          <input type="text" className="form-control" id="inputTel" />
+          <input
+            name="telefone"
+            type="text"
+            value={paciente?.telefone}
+            className="form-control"
+            id="inputTel"
+            onChange={handleChangeTel}
+          />
         </div>
       </form>
     </>
