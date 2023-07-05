@@ -1,9 +1,14 @@
 import "./Css/Login.css";
 import Logo from "../assets/Première Santé.png";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Service } from "../Service";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
+  useEffect(() => {
+    document.title = "Login";
+  }, []);
+  const navigate = useNavigate();
   const [Usuario, setUsuario] = useState<string>("");
   const [Senha, setSenha] = useState<string>("");
 
@@ -20,7 +25,25 @@ export const Login = () => {
   const entrar = () => {
     sessionStorage.setItem("Usuario", Usuario);
     sessionStorage.setItem("Senha", Senha);
-    Service.getMyUsuario(Usuario);
+    Service.getMyUsuario()
+      .then((res) => {
+        if (res.data.funcao == "ADMIN") {
+          return navigate("/ADMIN");
+        }
+        if (res.data.especialidade != null) {
+          return navigate("/paginamedico");
+        }
+        if (res.data.funcao == "RECEPCIONISTA") {
+          return navigate("/RECEPCIONISTA");
+        }
+      })
+      .catch((err) =>
+        window.alert(
+          err?.response?.data
+            .map((error: { message: any }) => error.message)
+            .join("\n")
+        )
+      );
   };
 
   return (

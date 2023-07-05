@@ -15,6 +15,7 @@ export const Paciente = function () {
   };
 
   useEffect(() => {
+    document.title = "Dados Paciente";
     Service.getPacientes()
       .then((res) => {
         setListaPacientes(res.data);
@@ -38,6 +39,7 @@ export const Paciente = function () {
     <>
       <Cabecalho nomeTela="Dados do Paciente"></Cabecalho>
       <button onClick={() => encaminharParaCadastro()}> Novo</button>
+      <button onClick={() => encaminharParaCadastro()}> Pesquisar</button>
       <table border={1}>
         <thead>
           <tr>
@@ -63,9 +65,6 @@ export const Paciente = function () {
                   <button onClick={() => apagar(Paciente.id)}>
                     Excluir Funcionário
                   </button>
-                </td>
-                <td>
-                  <button>Pesquisar</button>
                 </td>
               </tr>
             );

@@ -18,6 +18,7 @@ const Funcionarios = function () {
   };
 
   useEffect(() => {
+    document.title = "Dados Funcionário";
     Service.getFuncionarios().then((res) => {
       setListaFuncionarios(res.data);
     });
@@ -40,9 +41,11 @@ const Funcionarios = function () {
   return (
     <>
       <Cabecalho nomeTela="Dados Funcionários"></Cabecalho>
-      <div className=" NovoButton">
-        <button onClick={() => encaminharParaCadastro()}> Novo</button>
-      </div>
+
+      <button onClick={() => encaminharParaCadastro()}> Novo</button>
+
+      <button onClick={() => encaminharParaCadastro()}> Pesquisar</button>
+
       <table border={1}>
         <thead>
           <tr>
@@ -68,9 +71,6 @@ const Funcionarios = function () {
                   <button onClick={() => apagar(funcionario?.id)}>
                     Excluir Funcionário
                   </button>
-                </td>
-                <td>
-                  <button>Pesquisar</button>
                 </td>
               </tr>
             );

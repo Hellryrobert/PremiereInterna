@@ -14,7 +14,7 @@ export const Medico = function () {
   };
 
   useEffect(() => {
-    document.title = "Médico";
+    document.title = "Dados Médico";
     Service.getMedicos().then((res) => {
       setListaMedicos(res.data);
     });
@@ -39,6 +39,7 @@ export const Medico = function () {
     <>
       <Cabecalho nomeTela="Dados Médico"></Cabecalho>
       <button onClick={() => encaminharParaCadastro()}> Novo</button>
+      <button onClick={() => encaminharParaCadastro()}> Pesquisar</button>
       <table border={1}>
         <thead>
           <tr>

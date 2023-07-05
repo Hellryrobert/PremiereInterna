@@ -1,6 +1,10 @@
+import { useEffect } from "react";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/Admin.css";
 export const Admin = () => {
+  useEffect(() => {
+    document.title = "Admin";
+  }, []);
   return (
     <>
       <Cabecalho nomeTela="Admin"></Cabecalho>

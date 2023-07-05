@@ -1,5 +1,9 @@
+import { useEffect } from "react";
 import { Cabecalho } from "./Componentes/Cabecalho";
 export const PaginaMedico = () => {
+  useEffect(() => {
+    document.title = "Página Médico";
+  }, []);
   return (
     <>
       <Cabecalho nomeTela="Página Médico"></Cabecalho>

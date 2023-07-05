@@ -10,10 +10,57 @@ export const ControleConsulta = function () {
   const [listaConsulta, setListaControleConsulta] = useState<IConsulta[]>([]);
 
   useEffect(() => {
-    Service.getConsulta().then((res) => {
-      setListaControleConsulta(res.data);
+    document.title = "Controle Consulta";
+    Service.getConsultaDia().then((res) => {
+      setListaControleConsulta(
+        res.data.map((consulta) => {
+          return {
+            ...consulta,
+            data_consulta: new Date(consulta.data_consulta),
+          };
+        })
+      );
     });
   }, []);
+
+  const confirmar = (consulta?: IConsulta) => {
+    if (window.confirm("Deseja realmente confirmar esta consulta? ")) {
+      Service.getConsultaConfirmacao(consulta)
+        .then(() => {
+          window.alert("Confirmado com sucesso");
+          Service.getMedicos().then((res) => {
+            setListaMedicos(res.data);
+          });
+        })
+        .catch((err) =>
+          window.alert("Erro:" + JSON.stringify(err?.response?.data))
+        );
+    }
+  };
+
+  const apagar = (consulta?: IConsulta) => {
+    if (window.confirm("Deseja realmente apagar esta consulta? ")) {
+      Service.deleteConsulta(consulta)
+        .then(() => {
+          window.alert("Excluido com sucesso");
+          Service.getConsultaDia().then((res) => {
+            setListaControleConsulta(
+              res.data.map(
+                (consulta: { data_consulta: string | number | Date }) => {
+                  return {
+                    ...consulta,
+                    data_consulta: new Date(consulta.data_consulta),
+                  };
+                }
+              )
+            );
+          });
+        })
+        .catch((err) =>
+          window.alert("Erro:" + JSON.stringify(err?.response?.data))
+        );
+    }
+  };
 
   const encaminharParaCriarConsulta = (idCriarConsulta?: number) => {
     return navigate("/CriarConsulta?" + idCriarConsulta);
@@ -38,23 +85,7 @@ export const ControleConsulta = function () {
     <>
       <Cabecalho nomeTela="Controle de Consulta"></Cabecalho>
       <button onClick={() => encaminharParaCriarConsulta()}> Novo</button>
-
-      <div className="row1">
-        <div className="col-12">
-          Selecione uma data:
-          <input type="date" />
-        </div>
-
-        <div className="col-12">
-          Selecione um Paciente:
-          <input type="text" />
-        </div>
-
-        <div className="col-12">
-          Pesquisar:
-          <input type="text" />
-        </div>
-      </div>
+      <button onClick={() => encaminharParaCriarConsulta()}> Pesquisar</button>
 
       <table border={1}>
         <thead>
@@ -62,8 +93,9 @@ export const ControleConsulta = function () {
             <th>Nome Paciente</th>
             <th>Nome do Médico</th>
             <th>Data da Consulta</th>
-            <th>Alterar</th>
-            <th>Excluir Consulta</th>
+            <th>Hora da Consulta</th>
+            <th>Confirmar</th>
+            <th>Cancelar </th>
           </tr>
         </thead>
         <tbody>
@@ -72,41 +104,16 @@ export const ControleConsulta = function () {
               <tr key={ControleConsulta.id_consulta}>
                 <td>{ControleConsulta.nome_paciente}</td>
                 <td>{ControleConsulta.nome_medico}</td>
-
                 <td>{ControleConsulta.data_consulta?.toLocaleDateString()}</td>
-
-                <td>
-                  <button onClick={() => encaminharParaRemarcarConsulta()}>
-                    Remarcar Consulta
-                  </button>
-                </td>
-
-                <td>
-                  <button onClick={() => encaminharParaCancelarConsulta()}>
-                    Cancelar Consulta
-                  </button>
-                </td>
-
-                <td>
-                  <button onClick={() => encaminharParaConfirmarConsulta()}>
-                    Confirmar Consulta
-                  </button>
-                </td>
-
-                <td>
-                  <button>Abrir Atendimento</button>
-                </td>
-
-                <td>
-                  <div className="ButtonAtendimento">
-                    <button
-                      id="btncontato"
-                      className="btn btn-info rounded-pill px-3"
-                    >
-                      <a href="AbrirAtendimento">Abrir Atendimento</a>
-                    </button>
-                  </div>
-                </td>
+                <td>{ControleConsulta.hora_consulta}</td>
+                <button onClick={() => encaminharParaConfirmarConsulta()}>
+                  {" "}
+                  Confirmar
+                </button>
+                <button onClick={() => apagar(ControleConsulta)}>
+                  {" "}
+                  Cancelarr
+                </button>
               </tr>
             );
           })}

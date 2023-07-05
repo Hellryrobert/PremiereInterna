@@ -5,6 +5,7 @@ import "./Css/CadastroFuncionario.css";
 import { ChangeEvent, useEffect, useState } from "react";
 import { IFuncionario } from "../Models/IFuncionario";
 import { Service } from "../Service";
+
 export const CadastroFuncionario = () => {
   const location = useLocation();
   const [funcionario, setFuncionario] = useState<IFuncionario>();
@@ -63,6 +64,21 @@ export const CadastroFuncionario = () => {
     // Use cpfWithMask as needed (e.g., update state or perform further operations)
   };
 
+  const handleChangeCep = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const cep = event.target.value.replace(/\D/g, "");
+    const cepWithMask = cep.replace(/(\d{5})(\d{3})/, "$1-$2");
+    const newValue = cepWithMask;
+    const field = event.target.name;
+
+    const newObject = {
+      ...funcionario,
+      [field]: newValue,
+    };
+
+    setFuncionario(newObject);
+    // Use cepWithMask as needed (e.g., update state or perform further operations)
+  };
+
   const validate = () => {
     if (funcionario?.nome == "" || funcionario?.nome == null) {
       window.alert("O campo nome é obrigatório");
@@ -83,7 +99,7 @@ export const CadastroFuncionario = () => {
       funcionario?.data_nascimento == "" ||
       funcionario?.data_nascimento == null
     ) {
-      window.alert("O campo data de nacismento é obrigatório");
+      window.alert("O campo data de nascimento é obrigatório");
       return false;
     }
 
@@ -127,18 +143,8 @@ export const CadastroFuncionario = () => {
       return false;
     }
 
-    if (funcionario?.login == "" || funcionario?.login == null) {
-      window.alert("O campo login é obrigatório");
-      return false;
-    }
-
     if (funcionario?.id ?? 0 > 0) {
       return true;
-    }
-
-    if (funcionario?.senha == "" || funcionario?.senha == null) {
-      window.alert("O campo senha é obrigatório");
-      return false;
     }
 
     return true;
@@ -201,6 +207,8 @@ export const CadastroFuncionario = () => {
             value={funcionario?.nome}
             className="form-control"
             id="inputNome4"
+            maxLength={80}
+            minLength={10}
             onChange={onChange}
             name="nome"
           />
@@ -212,6 +220,7 @@ export const CadastroFuncionario = () => {
 
           <input
             maxLength={14}
+            minLength={14}
             className="CPF"
             onChange={handleChangeCPF}
             name="cpf"
@@ -227,6 +236,8 @@ export const CadastroFuncionario = () => {
 
           <input
             type="text"
+            maxLength={20}
+            minLength={5}
             name="rg"
             onChange={onChange}
             value={funcionario?.rg}
@@ -251,7 +262,7 @@ export const CadastroFuncionario = () => {
             Email
           </label>
           <input
-            type="text"
+            type="email"
             value={funcionario?.email}
             className="form-control"
             id="inputEmail"
@@ -265,6 +276,7 @@ export const CadastroFuncionario = () => {
             Login
           </label>
           <input
+            maxLength={30}
             type="text"
             value={funcionario?.login}
             className="form-control"
@@ -279,6 +291,7 @@ export const CadastroFuncionario = () => {
             Senha
           </label>
           <input
+            maxLength={15}
             type="password"
             className="form-control"
             id="inputSenha"
@@ -293,6 +306,7 @@ export const CadastroFuncionario = () => {
           </label>
           <input
             type="text"
+            maxLength={255}
             onChange={onChange}
             name="endereco"
             className="form-control"
@@ -307,6 +321,7 @@ export const CadastroFuncionario = () => {
             Cidade
           </label>
           <input
+            maxLength={80}
             type="text"
             value={funcionario?.cidade}
             className="form-control"
@@ -321,6 +336,8 @@ export const CadastroFuncionario = () => {
           </label>
           <select
             id="inputEstado"
+            maxLength={2}
+            minLength={2}
             value={funcionario?.estado}
             className="form-select"
             onChange={onChange}
@@ -361,12 +378,14 @@ export const CadastroFuncionario = () => {
             CEP
           </label>
           <input
+            maxLength={9}
+            minLength={9}
             type="text"
             name="cep"
             value={funcionario?.cep}
             className="form-control"
             id="inputCep"
-            onChange={onChange}
+            onChange={handleChangeCep}
           />
         </div>
         <div className="col-md-3">
@@ -374,6 +393,7 @@ export const CadastroFuncionario = () => {
             Bairro
           </label>
           <input
+            maxLength={80}
             type="text"
             value={funcionario?.bairro}
             className="form-control"
@@ -398,17 +418,23 @@ export const CadastroFuncionario = () => {
         </div>
 
         <div className="col-md-3">
-          <label htmlFor="inputFunc" className="form-label">
+          <label htmlFor="inputFuncao" className="form-label">
             Função
           </label>
-          <input
-            type="text"
-            name="funcao"
+          <select
+            id="inputFuncao"
+            maxLength={40}
             value={funcionario?.funcao}
-            className="form-control"
-            id="inputFunc"
+            className="form-select"
             onChange={onChange}
-          />
+            name="funcao"
+          >
+            <option selected>Selecionar...</option>
+
+            <option>ADMIN</option>
+            <option>RECEPCIONISTA</option>
+            <option>AUXILIAR</option>
+          </select>
         </div>
 
         <div className="col-12">

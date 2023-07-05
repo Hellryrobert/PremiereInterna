@@ -13,5 +13,5 @@ export interface IFuncionario {
   email?: string;
   funcao?: string;
   login?: string;
-  senha?: string;
+  senha?: null;
 }
