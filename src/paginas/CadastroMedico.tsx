@@ -1,20 +1,31 @@
 import moment from "moment";
-import { ChangeEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  JSXElementConstructor,
+  Key,
+  ReactElement,
+  ReactNode,
+  ReactPortal,
+  useEffect,
+  useState,
+} from "react";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import { IMedico } from "../Models/IMedico";
 import { useLocation } from "react-router-dom";
 import { Service } from "../Service";
 export const CadastroMedico = () => {
   const location = useLocation();
-  const [medico, setMedico] = useState<IMedico>();
+  const [medico, setMedico] = useState<IMedico>({
+    diasDisponiveis: [] as string[],
+  });
 
   useEffect(() => {
     document.title = "Cadastro de Médico";
     setMedico(location.state);
   }, []);
-  const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
-    const objMedico = medico ?? {};
 
+  const onChange = (ev: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const objMedico = medico ?? {};
     const newValue = ev.target.value;
     const field = ev.target.name;
 
@@ -25,6 +36,24 @@ export const CadastroMedico = () => {
 
     setMedico(newObject);
   };
+
+  const onChangeDiasDisponiveis = (ev: ChangeEvent<HTMLInputElement>) => {
+    const newValue = ev.target.value;
+    const diasDisponiveis = newValue.split(",").map((dia) => dia.trim());
+
+    setMedico((prevMedico) => ({
+      ...prevMedico,
+      diasDisponiveis,
+    }));
+  };
+
+  /*const onChange = (ev: { target: { value: string } }) => {
+    setMedico({ ...medico, diasDisponiveis: ev.target.value.split(",") });
+  };
+
+  const diasDisponiveisArray = Array.isArray(medico?.diasDisponiveis)
+    ? medico.diasDisponiveis
+    : [medico?.diasDisponiveis];*/
 
   const handleChangeTel = (event: any) => {
     const Tel = event.target.value.replace(/\D/g, "");
@@ -113,7 +142,7 @@ export const CadastroMedico = () => {
       return false;
     }
 
-    if (medico?.diasDisponiveis == "" || medico?.diasDisponiveis == null) {
+    if (medico?.diasDisponiveis == null) {
       window.alert("O campo dias disponíveis é obrigatório");
       return false;
     }
@@ -128,11 +157,14 @@ export const CadastroMedico = () => {
       return false;
     }
 
-    if (medico?.valor_consulta == "" || medico?.valor_consulta == null) {
+    if (medico?.valor_consulta == null) {
       window.alert("O campo valor consulta é obrigatório");
       return false;
     }
-    return true;
+
+    if (medico?.id ?? 0 > 0) {
+      return true;
+    }
   };
 
   const registrar = () => {
@@ -181,14 +213,16 @@ export const CadastroMedico = () => {
       </div>
       <form className="row g-3">
         <div className="col-md-6">
-          <label htmlFor="inputNomel4" className="form-label">
+          <label htmlFor="inputNome" className="form-label">
             Nome completo
           </label>
           <input
+            maxLength={80}
+            minLength={10}
             name="nome"
             type="text"
             className="form-control"
-            id="inputNome4"
+            id="inputNome"
             value={medico?.nome}
             onChange={onChange}
           />
@@ -198,6 +232,8 @@ export const CadastroMedico = () => {
             CNPJ
           </label>
           <input
+            maxLength={14}
+            minLength={14}
             name="cnpj"
             type="text"
             className="form-control"
@@ -206,12 +242,13 @@ export const CadastroMedico = () => {
             onChange={handleChangeCNPJ}
           />
         </div>
-
         <div className="col-md-2">
           <label htmlFor="inputCrm" className="form-label">
             Número CRM
           </label>
           <input
+            maxLength={6}
+            minLength={6}
             name="crm_num"
             type="number"
             value={medico?.crm_num}
@@ -225,58 +262,44 @@ export const CadastroMedico = () => {
           <label htmlFor="inputCrmEstado" className="form-label">
             Estado CRM
           </label>
-          <input
+
+          <select
             name="crm_estado"
-            type="text"
             value={medico?.crm_estado}
             className="form-control"
             id="inputCrmEstado"
             onChange={onChange}
-          />
+          >
+            <option selected>Selecionar...</option>
+            <option>AC</option>
+            <option>AL</option>
+            <option>AP</option>
+            <option>AM</option>
+            <option>BA</option>
+            <option>CE</option>
+            <option>DF</option>
+            <option>ES</option>
+            <option>GO</option>
+            <option>MA</option>
+            <option>MT</option>
+            <option>MS</option>
+            <option>MG</option>
+            <option>PA</option>
+            <option>PB</option>
+            <option>PR</option>
+            <option>PE</option>
+            <option>PI</option>
+            <option>RJ</option>
+            <option>RN</option>
+            <option>RS</option>
+            <option>RO</option>
+            <option>RR</option>
+            <option>SC</option>
+            <option>SP</option>
+            <option>SE</option>
+            <option>TO</option>
+          </select>
         </div>
-
-        <div className="col-md-2">
-          <label htmlFor="inputEspecialidade" className="form-label">
-            Especialidade
-          </label>
-          <input
-            name="especialidade"
-            type="text"
-            value={medico?.especialidade}
-            className="form-control"
-            id="inputEspecialidade"
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="col-2">
-          <label htmlFor="inputNumeroSala" className="form-label">
-            Número Sala
-          </label>
-          <input
-            name="sala"
-            type="text"
-            value={medico?.sala}
-            className="form-control"
-            id="inputNumeroSala"
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="col-2">
-          <label htmlFor="inputLogin" className="form-label">
-            Login
-          </label>
-          <input
-            name="login"
-            type="text"
-            value={medico?.login}
-            className="form-control"
-            id="inputLogin"
-            onChange={onChange}
-          />
-        </div>
-
         <div className="col-2">
           <label htmlFor="inputelefone" className="form-label">
             Telefone
@@ -291,7 +314,7 @@ export const CadastroMedico = () => {
           />
         </div>
 
-        <div className="col-4">
+        <div className="col-5">
           <label htmlFor="inputemail" className="form-label">
             Email
           </label>
@@ -305,11 +328,65 @@ export const CadastroMedico = () => {
           />
         </div>
 
+        <div className="col-md-3">
+          <label htmlFor="inputEspecialidade" className="form-label">
+            Especialidade
+          </label>
+          <select
+            name="especialidade"
+            value={medico?.especialidade}
+            className="form-control"
+            id="inputEspecialidade"
+            onChange={onChange}
+          >
+            <option selected>Selecionar...</option>
+            <option>CARDIOLOGISTA</option>
+            <option>DERMATOLOGISTA</option>
+            <option>GINECOLOGISTA</option>
+          </select>
+        </div>
+
+        <div className="col-2">
+          <label htmlFor="inputNumeroSala" className="form-label">
+            Número Sala
+          </label>
+          <select
+            name="sala"
+            value={medico?.sala}
+            className="form-control"
+            id="inputNumeroSala"
+            onChange={onChange}
+          >
+            <option selected>Selecionar...</option>
+            <option>01</option>
+            <option>02</option>
+            <option>03</option>
+            <option>04</option>
+            <option>05</option>
+            <option>06</option>
+          </select>
+        </div>
+        <div className="col-3">
+          <label htmlFor="inputLogin" className="form-label">
+            Login
+          </label>
+          <input
+            maxLength={30}
+            name="login"
+            type="text"
+            value={medico?.login}
+            className="form-control"
+            id="inputLogin"
+            onChange={onChange}
+          />
+        </div>
+
         <div className="col-2">
           <label htmlFor="inputSenha" className="form-label">
             Senha
           </label>
           <input
+            maxLength={15}
             name="senha"
             type="password"
             className="form-control"
@@ -319,20 +396,6 @@ export const CadastroMedico = () => {
         </div>
 
         <div className="col-2">
-          <label htmlFor="inputDiasDisponiveis" className="form-label">
-            Dias Disponíveis
-          </label>
-          <input
-            name="diasDisponiveis"
-            type="text"
-            value={medico?.diasDisponiveis}
-            className="form-control"
-            id="inputDiasDisponiveis"
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="col-3">
           <label htmlFor="inputHoraDisponivelInicial" className="form-label">
             Hora Disponível Inicial{" "}
           </label>
@@ -345,7 +408,6 @@ export const CadastroMedico = () => {
             onChange={onChange}
           />
         </div>
-
         <div className="col-3">
           <label htmlFor="inputHoraDisponivelFinal" className="form-label">
             Hora Disponível Final
@@ -359,7 +421,6 @@ export const CadastroMedico = () => {
             onChange={onChange}
           />
         </div>
-
         <div className="col-md-2">
           <label htmlFor="inputValorConsulta" className="form-label">
             Valor Consulta
@@ -373,8 +434,23 @@ export const CadastroMedico = () => {
             onChange={onChange}
           />
         </div>
+        <div className="col-12">
+          <label htmlFor="inputDiasDisponiveis" className="form-label">
+            Dias das Semanas Disponíveis
+          </label>
+          <input
+            name="diasDisponiveis"
+            type="text"
+            value={
+              medico?.diasDisponiveis ? medico.diasDisponiveis.join(", ") : ""
+            }
+            className="form-control"
+            id="inputDiasDisponiveis"
+            onChange={onChangeDiasDisponiveis}
+            placeholder="SEGUNDA, TERCA, QUARTA, QUINTA, SEXTA"
+          />
+        </div>
         <div className="col-md-2" />
-
         <div className="col-12">
           <button
             id="btncontato"

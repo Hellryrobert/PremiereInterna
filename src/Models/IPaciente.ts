@@ -11,10 +11,10 @@ export interface IPaciente {
   cep?: string;
   bairro?: string;
   cidade?: string;
-  estado?: string;
+  estado?: any;
   telefone?: string;
   email?: string;
-  plano_saude?: string;
-  num_plano?: number;
+  plano_saude?: any;
+  num_plano?: string;
   validade_plano?: any;
 }

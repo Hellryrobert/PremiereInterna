@@ -1,4 +1,4 @@
-import { ChangeEvent, ChangeEventHandler } from "react";
+/*import { ChangeEvent, ChangeEventHandler } from "react";
 import { IPaciente } from "../../Models/IPaciente";
 import { Service } from "../../Service";
 
@@ -45,6 +45,20 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
     // Use cpfWithMask as needed (e.g., update state or perform further operations)
   };
 
+  const handleChangeCep = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const cep = event.target.value.replace(/\D/g, "");
+    const cepWithMask = cep.replace(/(\d{5})(\d{3})/, "$1-$2");
+    const newValue = cepWithMask;
+    const field = event.target.name;
+
+    const newObject = {
+      ...paciente,
+      [field]: newValue,
+    };
+
+    if (onPacienteChange) onPacienteChange(newObject);
+    // Use cepWithMask as needed (e.g., update state or perform further operations)
+  };
   const handleChangeCPF = (event: any) => {
     const cpf = event.target.value.replace(/\D/g, "");
     const cpfWithMask = cpf.replace(
@@ -59,18 +73,20 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
       [field]: newValue,
     };
 
-    if (onPacienteChange) onPacienteChange(newObject);
+    setPaciente(paciente);
     // Use cpfWithMask as needed (e.g., update state or perform further operations)
   };
 
   return (
     <>
       <form className="row g-3">
-        <div className="col-md-3">
+        <div className="col-md-4">
           <label htmlFor="inputNomel4" className="form-label">
             Nome completo
           </label>
           <input
+            maxLength={80}
+            minLength={10}
             name="nome"
             type="text"
             value={paciente?.nome}
@@ -95,6 +111,21 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
         </div>
 
         <div className="col-md-2">
+          <label htmlFor="inputPassaporte" className="form-label">
+            Passaporte
+          </label>
+          <input
+            maxLength={20}
+            name="passaporte"
+            type="text"
+            value={paciente?.passaporte}
+            className="form-control"
+            id="inputPassaporte"
+            onChange={onChange}
+          />
+        </div>
+
+        <div className="col-md-2">
           <label htmlFor="inputDn" className="form-label">
             Data de Nascimento
           </label>
@@ -109,30 +140,31 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
         </div>
 
         <div className="col-md-2">
-          <label htmlFor="inputPassaporte" className="form-label">
-            Passaporte
-          </label>
-          <input
-            name="passaporte"
-            type="text"
-            value={paciente?.passaporte}
-            className="form-control"
-            id="inputPassaporte"
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="col-md-2">
           <label htmlFor="inputGenero" className="form-label">
             Genero
           </label>
           <input
+            maxLength={30}
             name="genero"
             type="text"
             value={paciente?.genero}
             className="form-control"
             id="inputGenero"
             onChange={onChange}
+          />
+        </div>
+
+        <div className="col-md-2">
+          <label htmlFor="inputTel" className="form-label">
+            Celular
+          </label>
+          <input
+            name="telefone"
+            type="text"
+            value={paciente?.telefone}
+            className="form-control"
+            id="inputTel"
+            onChange={handleChangeTel}
           />
         </div>
 
@@ -155,6 +187,8 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
             Nome Responsável
           </label>
           <input
+            maxLength={80}
+            minLength={10}
             name="nome_responsavel"
             type="text"
             value={paciente?.nome_responsavel}
@@ -178,62 +212,12 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
           />
         </div>
 
-        <div className="col-md-2">
-          <label htmlFor="inputplanoSaude" className="form-label">
-            Plano de Saúde
-          </label>
-          <select
-            name="plano_saude"
-            id="inputplanoSaude"
-            value={paciente?.plano_saude}
-            className="form-select"
-            onChange={onChange}
-          >
-            <option selected>Selecionar...</option>
-            <option>São Camilo</option>
-            <option>Unimed Fortaleza</option>
-            <option>Bradesco Saúde</option>
-            <option>Camed</option>
-            <option>Famed</option>
-            <option>Cassi</option>
-            <option>Life</option>
-            <option>Issec</option>
-          </select>
-        </div>
-
-        <div className="col-md-2">
-          <label htmlFor="inputnumPlano" className="form-label">
-            Número Plano
-          </label>
-          <input
-            name="num_plano"
-            type="number"
-            value={paciente?.num_plano}
-            className="form-control"
-            id="inputnumPlano"
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="col-md-2">
-          <label htmlFor="inputvalidadePlano" className="form-label">
-            Validade do Plano
-          </label>
-          <input
-            name="validade_plano"
-            type="date"
-            value={paciente?.validade_plano}
-            className="form-control"
-            id="inputvalidadePlano"
-            onChange={onChange}
-          />
-        </div>
-
         <div className="col-8">
           <label htmlFor="inputAddress" className="form-label">
             Endereço
           </label>
           <input
+            maxLength={255}
             name="endereco"
             type="text"
             value={paciente?.endereco}
@@ -244,11 +228,27 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
           />
         </div>
 
+        <div className="col-md-4">
+          <label htmlFor="inputBairro" className="form-label">
+            Bairro
+          </label>
+          <input
+            maxLength={80}
+            name="bairro"
+            type="text"
+            value={paciente?.bairro}
+            className="form-control"
+            id="inputBairro"
+            onChange={onChange}
+          />
+        </div>
+
         <div className="col-md-2">
           <label htmlFor="inputCidade" className="form-label">
             Cidade
           </label>
           <input
+            maxLength={80}
             name="cidade"
             type="text"
             value={paciente?.cidade}
@@ -268,7 +268,7 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
             className="form-select"
             onChange={onChange}
           >
-            <option selected>Selecionar...</option>
+            <option defaultValue="">Selecionar...</option>
             <option>AC</option>
             <option>AL</option>
             <option>AP</option>
@@ -303,42 +303,69 @@ export const DadosPaciente: React.FC<IPropriedades> = ({
             CEP
           </label>
           <input
+            maxLength={9}
             name="cep"
             type="text"
             value={paciente?.cep}
             className="form-control"
             id="inputCep"
-            onChange={onChange}
+            onChange={handleChangeCep}
           />
         </div>
-        <div className="col-md-3">
-          <label htmlFor="inputBairro" className="form-label">
-            Bairro
+
+        <div className="col-md-2">
+          <label htmlFor="inputplanoSaude" className="form-label">
+            Plano de Saúde
+          </label>
+          <select
+            name="plano_saude"
+            id="inputplanoSaude"
+            value={paciente?.plano_saude}
+            className="form-select"
+            onChange={onChange}
+          >
+            <option defaultValue="">Selecionar...</option>
+            <option>São Camilo</option>
+            <option>Unimed</option>
+            <option>Bradesco Saúde</option>
+            <option>Camed</option>
+            <option>Famed</option>
+            <option>Cassi</option>
+            <option>Life</option>
+            <option>Issec</option>
+            <option>Particular</option>
+          </select>
+        </div>
+
+        <div className="col-md-2">
+          <label htmlFor="inputnumPlano" className="form-label">
+            Número Plano
           </label>
           <input
-            name="bairro"
-            type="text"
-            value={paciente?.bairro}
+            maxLength={30}
+            name="num_plano"
+            type="number"
+            value={paciente?.num_plano}
             className="form-control"
-            id="inputBairro"
+            id="inputnumPlano"
             onChange={onChange}
           />
         </div>
 
         <div className="col-md-2">
-          <label htmlFor="inputTel" className="form-label">
-            Celular
+          <label htmlFor="inputvalidadePlano" className="form-label">
+            Validade do Plano
           </label>
           <input
-            name="telefone"
-            type="text"
-            value={paciente?.telefone}
+            name="validade_plano"
+            type="date"
+            value={paciente?.validade_plano}
             className="form-control"
-            id="inputTel"
-            onChange={handleChangeTel}
+            id="inputvalidadePlano"
+            onChange={onChange}
           />
         </div>
       </form>
     </>
   );
-};
+};*/

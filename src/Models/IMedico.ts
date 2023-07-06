@@ -10,7 +10,7 @@ export interface IMedico {
   especialidade?: string;
   sala?: string;
   login?: string;
-  diasDisponiveis?: any;
+  diasDisponiveis?: any[];
   hora_inicial?: any;
   hora_final?: any;
   valor_consulta?: number;

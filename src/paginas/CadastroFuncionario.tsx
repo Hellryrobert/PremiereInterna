@@ -1,5 +1,5 @@
 import moment from "moment";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/CadastroFuncionario.css";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -14,7 +14,7 @@ export const CadastroFuncionario = () => {
     document.title = "Cadastro de Funcionário";
     setFuncionario(location.state);
   }, []);
-  const onChange = (ev: ChangeEvent<HTMLInputElement>) => {
+  const onChange = (ev: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const objFuncionario = funcionario ?? {};
 
     const newValue = ev.target.value;
@@ -149,8 +149,28 @@ export const CadastroFuncionario = () => {
 
     return true;
   };
+  const navigate = useNavigate();
 
+  /*Service.getFuncionarios().then(() => {
+    navigate("/Funcionarios");
+  });
+  
   const registrar = () => {
+    if (
+      funcionario &&
+      validate() &&
+      window.confirm(
+        "Deseja realmente cadastrar este Funcionário? " +
+          JSON.stringify(funcionario)
+      )
+    ) {*/
+
+  /*const registrar = () => {
+    if (funcionario) {
+      Service.getFuncionarios().then(() => {
+        navigate("/Funcionarios");
+      });
+    }
     if (
       funcionario &&
       validate() &&
@@ -161,7 +181,10 @@ export const CadastroFuncionario = () => {
     ) {
       if (funcionario?.id ?? 0 > 0) {
         Service.PutFuncionarios(funcionario)
-          .then(() => window.alert("Atualiazado com sucesso"))
+          .then(() => {
+            window.alert("Atualiazado com sucesso");
+            navigate("/Funcionarios");
+          })
           .catch((err) =>
             window.alert("Erro:" + JSON.stringify(err?.response?.data))
           );
@@ -172,11 +195,54 @@ export const CadastroFuncionario = () => {
             "DD/MM/YYYY"
           ),
         })
-          .then(() => window.alert("Cadastrado com sucesso"))
+          .then(() => {
+            window.alert("Cadastrado com sucesso");
+            navigate("/Funcionarios");
+          })
           .catch((err) =>
             window.alert("Erro:" + JSON.stringify(err?.response?.data))
           );
       }
+    }
+  };*/
+
+  const registrar = () => {
+    if (funcionario) {
+      if (funcionario.id) {
+        // Atualização (PUT)
+        Service.PutFuncionarios(funcionario)
+          .then(() => {
+            window.alert("Atualizado com sucesso");
+            navigate("/Funcionarios");
+          })
+          .catch((err) => {
+            window.alert("Erro:" + JSON.stringify(err?.response?.data));
+          });
+      } else {
+        // Cadastro (POST)
+        Service.PostFuncionarios({
+          ...funcionario,
+          data_nascimento: moment(funcionario.data_nascimento).format(
+            "DD/MM/YYYY"
+          ),
+        })
+          .then(() => {
+            window.alert("Cadastrado com sucesso");
+            navigate("/Funcionarios");
+          })
+          .catch((err) => {
+            window.alert("Erro:" + JSON.stringify(err?.response?.data));
+          });
+      }
+    } else {
+      // Consulta (GET)
+      Service.getFuncionarios()
+        .then((res) => {
+          setFuncionario(res.data);
+        })
+        .catch((err) => {
+          window.alert("Erro:" + JSON.stringify(err?.response?.data));
+        });
     }
   };
 
@@ -253,7 +319,8 @@ export const CadastroFuncionario = () => {
             type="date"
             name="data_nascimento"
             onChange={onChange}
-            value={getTime(funcionario)}
+            value={funcionario?.data_nascimento}
+            //value={getTime(funcionario)}
           />
         </div>
 
@@ -262,6 +329,7 @@ export const CadastroFuncionario = () => {
             Email
           </label>
           <input
+            maxLength={80}
             type="email"
             value={funcionario?.email}
             className="form-control"
@@ -271,7 +339,42 @@ export const CadastroFuncionario = () => {
           />
         </div>
 
-        <div className="col-5">
+        <div className="col-md-2">
+          <label htmlFor="inputTel" className="form-label">
+            Celular
+          </label>
+          <input
+            maxLength={11}
+            minLength={11}
+            type="text"
+            value={funcionario?.telefone}
+            className="form-control"
+            id="inputTel"
+            name="telefone"
+            onChange={handleChangeTel}
+          />
+        </div>
+
+        <div className="col-md-2">
+          <label htmlFor="inputFuncao" className="form-label">
+            Função
+          </label>
+          <select
+            id="inputFuncao"
+            value={funcionario?.funcao}
+            className="form-select"
+            onChange={onChange}
+            name="funcao"
+          >
+            <option selected>Selecionar...</option>
+
+            <option>ADMIN</option>
+            <option>RECEPCIONISTA</option>
+            <option>AUXILIAR</option>
+          </select>
+        </div>
+
+        <div className="col-3">
           <label htmlFor="inputLogin" className="form-label">
             Login
           </label>
@@ -300,7 +403,7 @@ export const CadastroFuncionario = () => {
           />
         </div>
 
-        <div className="col-8">
+        <div className="col-7">
           <label htmlFor="inputAddress" className="form-label">
             Endereço
           </label>
@@ -313,6 +416,21 @@ export const CadastroFuncionario = () => {
             value={funcionario?.endereco}
             id="inputAddress"
             placeholder="Logradouro, Número e Complemento"
+          />
+        </div>
+
+        <div className="col-md-3">
+          <label htmlFor="inputBairro" className="form-label">
+            Bairro
+          </label>
+          <input
+            maxLength={80}
+            type="text"
+            value={funcionario?.bairro}
+            className="form-control"
+            onChange={onChange}
+            name="bairro"
+            id="inputBairro"
           />
         </div>
 
@@ -336,8 +454,6 @@ export const CadastroFuncionario = () => {
           </label>
           <select
             id="inputEstado"
-            maxLength={2}
-            minLength={2}
             value={funcionario?.estado}
             className="form-select"
             onChange={onChange}
@@ -387,54 +503,6 @@ export const CadastroFuncionario = () => {
             id="inputCep"
             onChange={handleChangeCep}
           />
-        </div>
-        <div className="col-md-3">
-          <label htmlFor="inputBairro" className="form-label">
-            Bairro
-          </label>
-          <input
-            maxLength={80}
-            type="text"
-            value={funcionario?.bairro}
-            className="form-control"
-            onChange={onChange}
-            name="bairro"
-            id="inputBairro"
-          />
-        </div>
-
-        <div className="col-md-2">
-          <label htmlFor="inputTel" className="form-label">
-            Celular
-          </label>
-          <input
-            type="text"
-            value={funcionario?.telefone}
-            className="form-control"
-            id="inputTel"
-            name="telefone"
-            onChange={handleChangeTel}
-          />
-        </div>
-
-        <div className="col-md-3">
-          <label htmlFor="inputFuncao" className="form-label">
-            Função
-          </label>
-          <select
-            id="inputFuncao"
-            maxLength={40}
-            value={funcionario?.funcao}
-            className="form-select"
-            onChange={onChange}
-            name="funcao"
-          >
-            <option selected>Selecionar...</option>
-
-            <option>ADMIN</option>
-            <option>RECEPCIONISTA</option>
-            <option>AUXILIAR</option>
-          </select>
         </div>
 
         <div className="col-12">

@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Login } from "./paginas/Login";
 import { PaginaMedico } from "./paginas/PaginaMedico";
 import { ControleMedico } from "./paginas/ControleMedico";
-import { PesquisarProntuario } from "./paginas/PesquisarProntuario";
+import { CadastroProntuario } from "./paginas/CadastroProntuario";
 import { CadastroPaciente } from "./paginas/CadastroPaciente";
 import { CadastroFuncionario } from "./paginas/CadastroFuncionario";
 import { CadastroMedico } from "./paginas/CadastroMedico";
@@ -22,7 +22,7 @@ const AppRoutes = () => {
         <Route Component={Login} path="/" />
         <Route Component={PaginaMedico} path="/PaginaMedico" />
         <Route Component={ControleMedico} path="/ControleMedico" />
-        <Route Component={PesquisarProntuario} path="/PesquisarProntuario" />
+        <Route Component={CadastroProntuario} path="/CadastroProntuario" />
         <Route Component={CadastroPaciente} path="/CadastroPaciente" />
         <Route Component={CadastroFuncionario} path="/CadastroFuncionario" />
         <Route Component={CadastroMedico} path="/CadastroMedico" />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
+//import "./Css/Funcionarios.css";
 import { Service } from "../Service";
 import { IPaciente } from "../Models/IPaciente";
 
@@ -10,7 +11,7 @@ export const Paciente = function () {
 
   const encaminharParaCadastro = (infoPaciente?: IPaciente) => {
     return navigate("/CadastroPaciente?", {
-      state: infoPaciente,
+      state: { ...infoPaciente, senha: undefined },
     });
   };
 
@@ -37,9 +38,11 @@ export const Paciente = function () {
 
   return (
     <>
-      <Cabecalho nomeTela="Dados do Paciente"></Cabecalho>
+      <Cabecalho nomeTela="Dados Paciente"></Cabecalho>
       <button onClick={() => encaminharParaCadastro()}> Novo</button>
+
       <button onClick={() => encaminharParaCadastro()}> Pesquisar</button>
+
       <table border={1}>
         <thead>
           <tr>
@@ -53,7 +56,7 @@ export const Paciente = function () {
         <tbody>
           {listaPacientes.map(function (Paciente) {
             return (
-              <tr>
+              <tr key={Paciente.id}>
                 <td>{Paciente.nome}</td>
                 <td>{Paciente.data_nascimento}</td>
                 <td>

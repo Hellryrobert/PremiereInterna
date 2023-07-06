@@ -1,6 +1,6 @@
 import { Cabecalho } from "./Componentes/Cabecalho";
 import { DadosConsulta } from "./Componentes/DadosConsulta";
-import { DadosPaciente } from "./Componentes/DadosPaciente";
+import { CadastroPaciente } from "../paginas/CadastroPaciente";
 
 export const AbrirAtendimento = () => {
   const encaminharParaConfirmarAtendimento = (
@@ -20,7 +20,7 @@ export const AbrirAtendimento = () => {
       <div className="col-12 navegacao">
         <h1>Abrir Atendimento</h1>
       </div>
-      <DadosPaciente></DadosPaciente>
+      <CadastroPaciente></CadastroPaciente>
       <DadosConsulta></DadosConsulta>
       <div className="row">
         <div className="col-4">

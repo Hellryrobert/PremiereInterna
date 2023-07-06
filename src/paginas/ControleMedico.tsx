@@ -8,6 +8,13 @@ import { IConsulta } from "../Models/IConsulta";
 export const ControleMedico = () => {
   const navigate = useNavigate();
   const [listaConsulta, setListaControleConsulta] = useState<IConsulta[]>([]);
+
+  const encaminharParaCadastro = (infoConsulta?: IConsulta) => {
+    return navigate("/CadastroProntuario?", {
+      state: { ...infoConsulta, id_consulta: 1 },
+    });
+  };
+
   useEffect(() => {
     document.title = "Controle Médico";
     Service.getConsultaLista().then((res) => {
@@ -22,7 +29,7 @@ export const ControleMedico = () => {
           <tr>
             <th>Nome Paciente</th>
             <th>Hora da Consulta</th>
-            <th>Confirmar</th>
+            <th>Iniciar Consulta</th>
           </tr>
         </thead>
         <tbody>
@@ -32,7 +39,11 @@ export const ControleMedico = () => {
                 <td>{ControleConsulta.nome_paciente}</td>
 
                 <td>{ControleConsulta.hora_consulta}</td>
-                <button>Confirmar</button>
+                <button
+                  onClick={() => encaminharParaCadastro(ControleConsulta)}
+                >
+                  Iniciar Consulta
+                </button>
               </tr>
             );
           })}

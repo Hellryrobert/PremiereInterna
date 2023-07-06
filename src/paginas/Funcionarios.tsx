@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/Funcionarios.css";
 import { Service } from "../Service";
@@ -7,9 +7,11 @@ import { IFuncionario } from "../Models/IFuncionario";
 
 const Funcionarios = function () {
   const navigate = useNavigate();
+  const location = useLocation();
   const [listaFuncionarios, setListaFuncionarios] = useState<IFuncionario[]>(
     []
   );
+  const [nomePesquisado, setNomePesquisado] = useState<string>("");
 
   const encaminharParaCadastro = (infoFuncionario?: IFuncionario) => {
     return navigate("/CadastroFuncionario?", {
@@ -24,6 +26,39 @@ const Funcionarios = function () {
     });
   }, []);
 
+  /*const encaminharParaCadastroPorNome = (nomeFuncionario?: string) => {
+    return navigate("/CadastroFuncionario?", {
+      state: { nome: nomeFuncionario },
+    });
+  };*/
+
+  const encaminharParaCadastroPorNome = async (nome: string) => {
+    try {
+      const response = await Service.getFuncionariosPorNome(nome);
+      const dadosFuncionario = response.data;
+
+      return navigate("/CadastroFuncionario", {
+        state: { dadosFuncionario, senha: undefined },
+      });
+    } catch (error) {
+      console.log("Erro ao consultar funcionário:", error);
+    }
+  };
+
+  useEffect(() => {
+    const nome = new URLSearchParams(location.search).get("nome");
+    if (nome) {
+      setNomePesquisado(nome);
+      Service.getFuncionariosPorNome(nome).then((res) => {
+        setListaFuncionarios(res.data);
+      });
+    }
+  }, [location.search]);
+
+  const handlePesquisarPorNome = () => {
+    navigate("/CadastroFuncionario?nome=${nomePesquisado}");
+  };
+
   const apagar = (Idfuncionario?: Number) => {
     if (
       window.confirm(
@@ -31,7 +66,10 @@ const Funcionarios = function () {
       )
     ) {
       Service.deleteFuncionarios(Idfuncionario)
-        .then(() => window.alert("Excluido com sucesso"))
+        .then(() => {
+          window.alert("Excluido com sucesso");
+          window.location.reload();
+        })
         .catch((err) =>
           window.alert("Erro:" + JSON.stringify(err?.response?.data))
         );
@@ -42,16 +80,33 @@ const Funcionarios = function () {
     <>
       <Cabecalho nomeTela="Dados Funcionários"></Cabecalho>
 
-      <button onClick={() => encaminharParaCadastro()}> Novo</button>
+      <div className="row">
+        <div className="col-md-3">
+          <button onClick={() => encaminharParaCadastro()}>
+            {" "}
+            Novo Cadastro
+          </button>
+        </div>
+        <div className="col-md-3">
+          <label htmlFor="nome">Nome do Funcionário</label>
+          <input
+            id="nome"
+            type="text"
+            value={nomePesquisado}
+            onChange={(e) => setNomePesquisado(e.target.value)}
+          />
+          <button onClick={handlePesquisarPorNome}>Pesquisar</button>
+        </div>
+      </div>
 
-      <button onClick={() => encaminharParaCadastro()}> Pesquisar</button>
+      <br></br>
 
       <table border={1}>
         <thead>
           <tr>
             <th>Nome Funcionário</th>
-            <th>Data de Nascimento</th>
-            <th>Alterar</th>
+            <th>Consultar dados</th>
+            <th>Alterar Funcionário</th>
             <th>Excluir Funcionário</th>
           </tr>
         </thead>
@@ -59,9 +114,17 @@ const Funcionarios = function () {
         <tbody>
           {listaFuncionarios.map(function (funcionario) {
             return (
-              <tr>
+              <tr key={funcionario.id}>
                 <td>{funcionario.nome}</td>
-                <td>{funcionario.data_nascimento}</td>
+                <td>
+                  <button
+                    onClick={() =>
+                      encaminharParaCadastroPorNome(funcionario.nome)
+                    }
+                  >
+                    Consultar
+                  </button>
+                </td>
                 <td>
                   <button onClick={() => encaminharParaCadastro(funcionario)}>
                     Alterar
@@ -69,7 +132,7 @@ const Funcionarios = function () {
                 </td>
                 <td>
                   <button onClick={() => apagar(funcionario?.id)}>
-                    Excluir Funcionário
+                    Excluir
                   </button>
                 </td>
               </tr>

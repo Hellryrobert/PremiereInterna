@@ -23,6 +23,9 @@ export const Service = {
   getFuncionarios: () => {
     return Service.api().get("/funcionario/dados");
   },
+  getFuncionariosPorNome: (nome: string) => {
+    return Service.api().get("/funcionario/dados?nome=${nome}");
+  },
   getPacientes: () => {
     return Service.api().get("/paciente/dados");
   },
@@ -72,7 +75,7 @@ export const Service = {
 
   PostProntuario: (prontuario: IProntuario) => {
     return Service.api().post(
-      "/prontuario?id_consulta=" + prontuario.id,
+      "/prontuario?id_consulta=" + prontuario.id_prontuario,
       prontuario
     );
   },
@@ -97,7 +100,7 @@ export const Service = {
   },
 
   getConsultaLista: () => {
-    return Service.api().get("consulta/lista?data=2023-07-06&nome=bianca");
+    return Service.api().get("consulta/lista?nome=bruno&data=15/06/2023");
   },
 
   getConsultaDia: () => {
