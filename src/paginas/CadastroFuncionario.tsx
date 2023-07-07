@@ -124,7 +124,7 @@ export const CadastroFuncionario = () => {
     }
 
     if (funcionario?.estado == "" || funcionario?.estado == null) {
-      window.alert("O campo estadp é obrigatório");
+      window.alert("O campo estado é obrigatório");
       return false;
     }
 
@@ -165,7 +165,7 @@ export const CadastroFuncionario = () => {
       )
     ) {*/
 
-  /*const registrar = () => {
+  const registrar = () => {
     if (funcionario) {
       Service.getFuncionarios().then(() => {
         navigate("/Funcionarios");
@@ -180,7 +180,12 @@ export const CadastroFuncionario = () => {
       )
     ) {
       if (funcionario?.id ?? 0 > 0) {
-        Service.PutFuncionarios(funcionario)
+        Service.PutFuncionarios({
+          ...funcionario,
+          data_nascimento: moment(funcionario.data_nascimento).format(
+            "DD/MM/YYYY"
+          ),
+        })
           .then(() => {
             window.alert("Atualiazado com sucesso");
             navigate("/Funcionarios");
@@ -203,46 +208,6 @@ export const CadastroFuncionario = () => {
             window.alert("Erro:" + JSON.stringify(err?.response?.data))
           );
       }
-    }
-  };*/
-
-  const registrar = () => {
-    if (funcionario) {
-      if (funcionario.id) {
-        // Atualização (PUT)
-        Service.PutFuncionarios(funcionario)
-          .then(() => {
-            window.alert("Atualizado com sucesso");
-            navigate("/Funcionarios");
-          })
-          .catch((err) => {
-            window.alert("Erro:" + JSON.stringify(err?.response?.data));
-          });
-      } else {
-        // Cadastro (POST)
-        Service.PostFuncionarios({
-          ...funcionario,
-          data_nascimento: moment(funcionario.data_nascimento).format(
-            "DD/MM/YYYY"
-          ),
-        })
-          .then(() => {
-            window.alert("Cadastrado com sucesso");
-            navigate("/Funcionarios");
-          })
-          .catch((err) => {
-            window.alert("Erro:" + JSON.stringify(err?.response?.data));
-          });
-      }
-    } else {
-      // Consulta (GET)
-      Service.getFuncionarios()
-        .then((res) => {
-          setFuncionario(res.data);
-        })
-        .catch((err) => {
-          window.alert("Erro:" + JSON.stringify(err?.response?.data));
-        });
     }
   };
 

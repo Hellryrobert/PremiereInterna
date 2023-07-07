@@ -4,5 +4,7 @@ export interface IProntuario {
   nomeMedico?: string;
   data_consulta?: any;
   anamnese?: string;
-  file?: string;
+  prescricaoMedica?: string;
+  examePrescritos?: string;
+  file?: Blob;
 }

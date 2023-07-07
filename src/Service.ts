@@ -24,7 +24,7 @@ export const Service = {
     return Service.api().get("/funcionario/dados");
   },
   getFuncionariosPorNome: (nome: string) => {
-    return Service.api().get("/funcionario/dados?nome=${nome}");
+    return Service.api().get("/funcionario/dados?nome=" + nome);
   },
   getPacientes: () => {
     return Service.api().get("/paciente/dados");
@@ -76,7 +76,8 @@ export const Service = {
   PostProntuario: (prontuario: IProntuario) => {
     return Service.api().post(
       "/prontuario?id_consulta=" + prontuario.id_prontuario,
-      prontuario
+      prontuario,
+      { headers: { "Content-type": "multipart/form-data" } }
     );
   },
 

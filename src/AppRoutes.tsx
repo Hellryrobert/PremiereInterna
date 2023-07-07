@@ -14,6 +14,7 @@ import { Paciente } from "./paginas/Paciente";
 import { ControleConsulta } from "./paginas/ControleConsulta";
 import { AbrirAtendimento } from "./paginas/AbrirAtendimento";
 import { Recepcionista } from "./paginas/Recepcionista";
+import { VisualizarFuncionario } from "./paginas/VisualizarFuncionario";
 
 const AppRoutes = () => {
   return (
@@ -28,6 +29,10 @@ const AppRoutes = () => {
         <Route Component={CadastroMedico} path="/CadastroMedico" />
         <Route Component={CriarConsulta} path="/CriarConsulta" />
         <Route Component={Funcionarios} path="/Funcionarios" />
+        <Route
+          Component={VisualizarFuncionario}
+          path="/VisualizarFuncionario/:nome"
+        />
         <Route Component={Medico} path="/Medico" />
         <Route Component={Paciente} path="/Paciente" />
         <Route Component={Admin} path="/Admin" />

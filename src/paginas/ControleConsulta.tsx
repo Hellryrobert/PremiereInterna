@@ -84,9 +84,21 @@ export const ControleConsulta = function () {
   return (
     <>
       <Cabecalho nomeTela="Controle de Consulta"></Cabecalho>
-      <button onClick={() => encaminharParaCriarConsulta()}> Novo</button>
-      <button onClick={() => encaminharParaCriarConsulta()}> Pesquisar</button>
-
+      <button className="button1">
+        <button onClick={() => encaminharParaCriarConsulta()}> Novo</button>
+        <button onClick={() => encaminharParaCriarConsulta()}>
+          {" "}
+          Pesquisar
+        </button>
+        <button onClick={() => encaminharParaCriarConsulta()}>
+          {" "}
+          Confirmar
+        </button>
+        <button onClick={() => encaminharParaAtendimento()}>
+          {" "}
+          Abrir Atendimento
+        </button>
+      </button>
       <table border={1}>
         <thead>
           <tr>

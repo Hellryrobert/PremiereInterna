@@ -11,6 +11,8 @@ import ReactPDF, {
   Document,
   StyleSheet,
   PDFViewer,
+  PDFDownloadLink,
+  BlobProvider,
 } from "@react-pdf/renderer";
 
 export const CadastroProntuario = () => {
@@ -31,6 +33,8 @@ export const CadastroProntuario = () => {
   };
 
   const [prontuario, setProntuario] = useState<IProntuario>();
+  const [pdf, setPdf] = useState<Blob | null>(null);
+  const [visivel, setVisivel] = useState<Boolean>(false);
 
   const registrar = async () => {
     if (
@@ -40,6 +44,12 @@ export const CadastroProntuario = () => {
           JSON.stringify(prontuario)
       )
     ) {
+      Service.PostProntuario({
+        ...prontuario,
+        file: pdf as Blob,
+      });
+
+      /*
       const pdf = await ReactPDF.renderToStream(<MyDocument />);
 
       const chunks: any[] = [];
@@ -53,7 +63,7 @@ export const CadastroProntuario = () => {
         //const buffer = Buffer.concat(chunks);
         const base64String = buffer.toString("base64");
         console.log(base64String); // ou faça o que desejar com a string Base64
-      });
+      });*/
       /*
       const p = {
         ...prontuario,
@@ -80,18 +90,6 @@ export const CadastroProntuario = () => {
     },
   });
 
-  const MyDocument = () => (
-    <Document>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.section}>
-          <Text>Anamnese: {prontuario?.anamnese} </Text>
-        </View>
-        <View style={styles.section}>
-          <Text>Section #2</Text>
-        </View>
-      </Page>
-    </Document>
-  );
   return (
     <>
       <Cabecalho nomeTela="Cadastro de Protuário"> </Cabecalho>
@@ -134,17 +132,73 @@ export const CadastroProntuario = () => {
               className="btn btn-info rounded-pill px-3"
               onClick={registrar}
               type="button"
+              disabled={!pdf || !visivel}
             >
-              <a href="PesquisarProntuario">Registrar Prontuário</a>
+              {" "}
+              Registrar Prontuário
+            </button>
+            <button
+              id="btncontato"
+              className="btn btn-info rounded-pill px-3"
+              onClick={() => {
+                setVisivel(true);
+              }}
+              type="button"
+            >
+              {" "}
+              Visualizar Prontuário
             </button>
           </div>
         </div>
-        <div className="col-md-6">
-          <PDFViewer>
-            <MyDocument />
-          </PDFViewer>
-        </div>
+        {visivel ? (
+          <>
+            <div className="col-md-6">
+              <PDFViewer>
+                <MyDocument styles={styles} prontuario={prontuario} />
+              </PDFViewer>
+            </div>
+            <PDFDownloadLink
+              document={<MyDocument styles={styles} prontuario={prontuario} />}
+              fileName="somename.pdf"
+            >
+              {({ blob, url, loading, error }) =>
+                loading ? "Loading document..." : "Download now!"
+              }
+            </PDFDownloadLink>
+
+            <div>
+              <BlobProvider
+                document={
+                  <MyDocument styles={styles} prontuario={prontuario} />
+                }
+              >
+                {({ blob, url, loading, error }) => {
+                  setPdf(blob);
+                  // Do whatever you need with blob here
+                  return <div>There's something going on on the fly</div>;
+                }}
+              </BlobProvider>
+            </div>
+          </>
+        ) : null}
       </div>
     </>
   );
 };
+const MyDocument = ({ styles, prontuario }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <View style={styles.section}>
+        <Text>Anamnese: {prontuario?.anamnese} </Text>
+        <Text>Prescrição Médica: {prontuario?.prescricaoMedica} </Text>
+        <Text>
+          {" "}
+          Exames Prescritos e Laudos de Exames: {prontuario?.examePrescritos}
+        </Text>
+      </View>
+      <View style={styles.section}>
+        <Text>Section #2</Text>
+      </View>
+    </Page>
+  </Document>
+);

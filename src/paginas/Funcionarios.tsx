@@ -4,6 +4,7 @@ import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/Funcionarios.css";
 import { Service } from "../Service";
 import { IFuncionario } from "../Models/IFuncionario";
+import { VisualizarFuncionario } from "./VisualizarFuncionario";
 
 const Funcionarios = function () {
   const navigate = useNavigate();
@@ -13,12 +14,6 @@ const Funcionarios = function () {
   );
   const [nomePesquisado, setNomePesquisado] = useState<string>("");
 
-  const encaminharParaCadastro = (infoFuncionario?: IFuncionario) => {
-    return navigate("/CadastroFuncionario?", {
-      state: { ...infoFuncionario, senha: undefined },
-    });
-  };
-
   useEffect(() => {
     document.title = "Dados Funcionário";
     Service.getFuncionarios().then((res) => {
@@ -26,37 +21,39 @@ const Funcionarios = function () {
     });
   }, []);
 
-  /*const encaminharParaCadastroPorNome = (nomeFuncionario?: string) => {
-    return navigate("/CadastroFuncionario?", {
-      state: { nome: nomeFuncionario },
-    });
-  };*/
-
-  const encaminharParaCadastroPorNome = async (nome: string) => {
-    try {
-      const response = await Service.getFuncionariosPorNome(nome);
-      const dadosFuncionario = response.data;
-
-      return navigate("/CadastroFuncionario", {
-        state: { dadosFuncionario, senha: undefined },
-      });
-    } catch (error) {
-      console.log("Erro ao consultar funcionário:", error);
-    }
+  const handlePesquisarPorNome = async () => {
+    debugger;
+    const { data } = await Service.getFuncionariosPorNome(nomePesquisado);
+    setListaFuncionarios(data);
   };
 
   useEffect(() => {
-    const nome = new URLSearchParams(location.search).get("nome");
+    const searchParams = new URLSearchParams(location.search);
+    const nome = searchParams.get("nome");
+
     if (nome) {
       setNomePesquisado(nome);
-      Service.getFuncionariosPorNome(nome).then((res) => {
-        setListaFuncionarios(res.data);
-      });
+      Service.getFuncionariosPorNome(nome)
+        .then((response) => {
+          setListaFuncionarios(response.data);
+        })
+        .catch((error) => {
+          console.log("Erro ao obter os funcionários por nome:", error);
+        });
     }
   }, [location.search]);
 
-  const handlePesquisarPorNome = () => {
-    navigate("/CadastroFuncionario?nome=${nomePesquisado}");
+  const encaminharParaCadastro = (infoFuncionario?: IFuncionario) => {
+    return navigate("/CadastroFuncionario", {
+      state: {
+        ...infoFuncionario,
+        senha: undefined,
+        data_nascimento: infoFuncionario?.data_nascimento
+          .split("/")
+          .reverse()
+          .join("-"),
+      },
+    });
   };
 
   const apagar = (Idfuncionario?: Number) => {
@@ -119,7 +116,7 @@ const Funcionarios = function () {
                 <td>
                   <button
                     onClick={() =>
-                      encaminharParaCadastroPorNome(funcionario.nome)
+                      navigate("/VisualizarFuncionario/" + funcionario.nome)
                     }
                   >
                     Consultar

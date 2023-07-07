@@ -450,7 +450,7 @@ export const CadastroMedico = () => {
             placeholder="SEGUNDA, TERCA, QUARTA, QUINTA, SEXTA"
           />
         </div>
-        <div className="col-md-2" />
+
         <div className="col-12">
           <button
             id="btncontato"

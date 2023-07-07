@@ -52,7 +52,7 @@ export const Medico = function () {
         <tbody>
           {listaMedicos.map(function (Medico) {
             return (
-              <tr>
+              <tr key={Medico.id}>
                 <td>{Medico.nome}</td>
                 <td>{Medico.crm_num}</td>
                 <td>
