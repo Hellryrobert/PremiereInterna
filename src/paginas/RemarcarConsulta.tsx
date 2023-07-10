@@ -1,16 +1,31 @@
 import { Cabecalho } from "./Componentes/Cabecalho";
 import { useEffect, useState, ChangeEvent } from "react";
 import { IConsulta } from "../Models/IConsulta";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Service } from "../Service";
 import { IFuncionario } from "../Models/IFuncionario";
 import { IPaciente } from "../Models/IPaciente";
 import { IMedico } from "../Models/IMedico";
+type Remarcacao = {
+  id_consulta: number;
+  nome_medico: string;
+  especialidade: string;
+  data_consulta: any;
+  hora_consulta: any;
+  retorno_consulta: string;
+  nome_paciente: string;
+  nome_funcionario: string;
+  confirmacao: any;
+  autorizacao: any;
+  pagamento: any;
+};
 
-export const CriarConsulta = () => {
+export const RemarcarConsulta = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { id_consulta } = useParams();
   const [ControleConsulta, setControleConsulta] = useState<IConsulta>();
+  const [RemarcaConsulta, setRemarcaConsulta] = useState<Remarcacao>();
   const [medico, setMedico] = useState<IMedico>();
   const [paciente, setPaciente] = useState<IPaciente>();
   const [funcionario, setFuncionario] = useState<IFuncionario>();
@@ -28,7 +43,10 @@ export const CriarConsulta = () => {
   const [medicosDisponiveis, setMedicosDisponiveis] = useState<string[]>([]);
 
   useEffect(() => {
-    setControleConsulta(location.state);
+    document.title = "Dados da Consulta";
+    Service.getConsultaConfirmacao(Number(id_consulta)).then((result) => {
+      setRemarcaConsulta(result.data);
+    });
   }, []);
 
   useEffect(() => {
@@ -43,47 +61,20 @@ export const CriarConsulta = () => {
     });
   }, []);
 
-  const pacienteNome = paciente ? paciente.nome : "";
-  const funcionarioNome = funcionario ? funcionario.nome : "";
-
-  /*const onChange = (ev: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const objConsulta = ControleConsulta ?? {};
-    const newValue = ev.target.value;
-    const field = ev.target.name;
-
-    const newObject = {
-      ...objConsulta,
-      [field]: newValue,
-    };
-
-    setControleConsulta(newObject);
-  };*/
-
-  const onChangeEspecialidade = (event: { target: { value: any } }) => {
-    const selectedEspecialidade = event.target.value;
-    setControleConsulta({
-      ...ControleConsulta,
-      especialidade: selectedEspecialidade,
-    });
-    setEspecialidade(selectedEspecialidade);
-    Service.getMedicosPorEspecialidade(selectedEspecialidade)
+  useEffect(() => {
+    Service.getDatasDisponiveisPorMedico(RemarcaConsulta?.nome_medico || "")
       .then((response) => {
-        setMedicosDisponiveis(response.data);
+        setDatasDisponiveis(response.data);
       })
       .catch((error) => {
-        console.log("Erro ao obter médicos por especialidade:", error);
+        console.log("Erro ao obter datas disponíveis:", error);
       });
-  };
+  }, [RemarcaConsulta?.nome_medico]);
+
+  const funcionarioNome = funcionario ? funcionario.nome : "";
 
   const onChangeMedico = (event: { target: { value: any } }) => {
-    const selectedMedico = event.target.value;
-    setControleConsulta({
-      ...ControleConsulta,
-      nome_medico: selectedMedico,
-    });
-    setMedicoSelecionado(selectedMedico);
-
-    Service.getDatasDisponiveisPorMedico(selectedMedico)
+    Service.getDatasDisponiveisPorMedico(RemarcaConsulta?.nome_medico || "")
       .then((response) => {
         setDatasDisponiveis(response.data);
       })
@@ -102,7 +93,7 @@ export const CriarConsulta = () => {
 
     setHorasDisponiveis([]); // Limpa as horas disponíveis antes de fazer a chamada
 
-    Service.getHorasValidas(medicoSelecionado, selectedData)
+    Service.getHorasValidas(RemarcaConsulta?.nome_medico || "", selectedData)
       .then((response) => {
         const horasValidas = response.data;
         setHorasDisponiveis(horasValidas); // Atualiza as horas disponíveis com a resposta da API
@@ -121,15 +112,6 @@ export const CriarConsulta = () => {
     setHoraSelecionada(selectedHora);
   };
 
-  const onChangeNomePesquisado = (event: { target: { value: any } }) => {
-    const nome = event.target.value;
-    setControleConsulta({
-      ...ControleConsulta,
-      nome_paciente: nome,
-    });
-    setNomePesquisado(nome);
-  };
-
   const onChangeNomePesquisado2 = (event: { target: { value: any } }) => {
     const nome2 = event.target.value;
     setControleConsulta({
@@ -139,38 +121,7 @@ export const CriarConsulta = () => {
     setNomePesquisado2(nome2);
   };
 
-  const onChangeRetorno = (event: { target: { value: any } }) => {
-    const retorno = event.target.value;
-    setControleConsulta({
-      ...ControleConsulta,
-      retorno_consulta: retorno,
-    });
-    setRetorno(retorno);
-  };
-
   const validate = () => {
-    if (
-      ControleConsulta?.especialidade == "" ||
-      ControleConsulta?.especialidade == null
-    ) {
-      window.alert("O campo especialidade é obrigatório");
-      return false;
-    }
-    if (
-      ControleConsulta?.nome_medico == "" ||
-      ControleConsulta?.nome_medico == null
-    ) {
-      window.alert("O campo nome do médico é obrigatório");
-      return false;
-    }
-    if (
-      ControleConsulta?.nome_paciente == "" ||
-      ControleConsulta?.nome_paciente == null
-    ) {
-      window.alert("O campo nome do paciente é obrigatório");
-      return false;
-    }
-
     if (
       ControleConsulta?.nome_funcionario == "" ||
       ControleConsulta?.nome_funcionario == null
@@ -192,14 +143,6 @@ export const CriarConsulta = () => {
       return false;
     }
 
-    if (
-      ControleConsulta?.retorno_consulta == "" ||
-      ControleConsulta?.retorno_consulta == null
-    ) {
-      window.alert("O campo retorno consulta é obrigatório");
-      return false;
-    }
-
     if (ControleConsulta?.id_consulta ?? 0 > 0) {
       return true;
     }
@@ -209,36 +152,27 @@ export const CriarConsulta = () => {
 
   const registrar = () => {
     const consultar = {
-      especialidade: especialidade,
-      nome_medico: medicoSelecionado,
       data_consulta: dataSelecionada,
       hora_consulta: horaSelecionada,
-      retorno_consulta: retorno,
-      nome_paciente: nomePesquisado,
       nome_funcionario: nomePesquisado2,
-      id_consulta: ControleConsulta?.id_consulta,
+      id_consulta: RemarcaConsulta?.id_consulta,
+      especialidade: RemarcaConsulta?.especialidade,
+      nome_medico: RemarcaConsulta?.nome_medico,
+      nome_paciente: RemarcaConsulta?.nome_paciente,
+      retorno_consulta: RemarcaConsulta?.retorno_consulta,
     };
     setControleConsulta(consultar);
     if (
       consultar &&
       validate() &&
       window.confirm(
-        "Deseja realmente cadastrar esta consulta? " + JSON.stringify(consultar)
+        "Deseja realmente remarcar esta consulta? " + JSON.stringify(consultar)
       )
     ) {
-      if (consultar.id_consulta ?? 0 > 0) {
+      if (RemarcaConsulta?.id_consulta ?? 0 > 0) {
         Service.PutConsulta(consultar)
           .then(() => {
             window.alert("Atualizado com sucesso");
-            navigate("/ControleConsulta");
-          })
-          .catch((err) =>
-            window.alert("Erro:" + JSON.stringify(err?.response?.data))
-          );
-      } else {
-        Service.PostConsulta(consultar)
-          .then(() => {
-            window.alert("Cadastrado com sucesso");
             navigate("/ControleConsulta");
           })
           .catch((err) =>
@@ -252,43 +186,35 @@ export const CriarConsulta = () => {
     <>
       <Cabecalho nomeTela=""></Cabecalho>
       <div className="col-12 navegacao">
-        <h1>Criar Consulta</h1>
+        <h1>Remarcar Consulta</h1>
       </div>
       <form className="row g-3">
         <div className="col-md-6">
           <label htmlFor="inputEspecialidade" className="form-label">
             Especialidade
           </label>
-          <select
+          <input
+            type="text"
             name="especialidade"
-            value={especialidade}
+            value={RemarcaConsulta?.especialidade}
             className="form-control"
             id="inputEspecialidade"
-            onChange={onChangeEspecialidade}
-          >
-            <option value="">Selecionar...</option>
-            <option value="cardiologista">Cardiologista</option>
-            <option value="dermatologista">Dermatologista</option>
-            <option value="ginecologista">Ginecologista</option>
-          </select>
+            disabled
+          />
         </div>
 
         <div className="col-md-6">
           <label htmlFor="inputMedico" className="form-label">
             Médico
           </label>
-          <select
-            name="medico"
-            value={medicoSelecionado}
+          <input
+            type="text"
+            name="nome_medico"
+            value={RemarcaConsulta?.nome_medico}
             className="form-control"
-            id="inputMedico"
-            onChange={onChangeMedico}
-          >
-            <option value="">Selecionar...</option>
-            {medicosDisponiveis.map((Medico) => (
-              <option key={Medico}>{Medico ?? ""}</option>
-            ))}
-          </select>
+            id="inputNomeMedico"
+            disabled
+          />
         </div>
 
         <div className="col-md-4">
@@ -335,36 +261,28 @@ export const CriarConsulta = () => {
           <label htmlFor="inputRetorno" className="form-label">
             Será retorno?
           </label>
-          <select
-            id="inputRetorno"
-            value={retorno}
-            className="form-select"
-            onChange={onChangeRetorno}
-            name="retorno"
-          >
-            <option value="">Selecionar...</option>
-            <option value="true">SIM</option>
-            <option value="false">NÃO</option>
-          </select>
+          <input
+            type="text"
+            name="retorno_consulta"
+            value={RemarcaConsulta?.retorno_consulta}
+            className="form-control"
+            id="inputRetornoConsulta"
+            disabled
+          />
         </div>
 
         <div className="col-md-6">
           <label htmlFor="inputNome" className="form-label">
             Nome do paciente
           </label>
-          <select
+          <input
+            type="text"
             name="nome_paciente"
+            value={RemarcaConsulta?.nome_paciente}
             className="form-control"
-            id="inputNomePac"
-            onChange={onChangeNomePesquisado}
-          >
-            {" "}
-            <option> Selecione</option>
-            {listaPaciente.map((paciente) => (
-              <option key={paciente.id}>{paciente?.nome ?? ""}</option>
-            ))}
-          </select>
-          <p>{pacienteNome}</p>
+            id="inputNomePaciente"
+            disabled
+          />
         </div>
 
         <div className="col-md-6">

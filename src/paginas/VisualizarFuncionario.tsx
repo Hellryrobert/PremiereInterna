@@ -10,7 +10,7 @@ import "./Css/CadastroFuncionario.css";
 import { ChangeEvent, useEffect, useState } from "react";
 import { IFuncionario } from "../Models/IFuncionario";
 import { Service } from "../Service";
-import axios from "axios";
+/*import axios from "axios";*/
 
 export const VisualizarFuncionario = () => {
   const { nome } = useParams();
@@ -96,7 +96,7 @@ export const VisualizarFuncionario = () => {
 
           <input
             disabled
-            type="date"
+            type="text"
             name="data_nascimento"
             value={funcionario?.data_nascimento}
             //value={getTime(funcionario)}

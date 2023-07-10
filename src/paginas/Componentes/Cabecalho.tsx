@@ -15,3 +15,5 @@ export const Cabecalho = (props: any) => {
     </>
   );
 };
+
+export default Cabecalho;

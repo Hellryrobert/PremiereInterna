@@ -14,12 +14,6 @@ export const PaginaMedico = () => {
             <a href="ControleMedico">Controle Medico</a>
           </button>
         </div>
-
-        <div className="col-md-12">
-          <button id="btncontato" className="btn btn-info rounded-pill px-3">
-            <a href="PesquisarProntuario">Pesquisar Prontuário</a>
-          </button>
-        </div>
       </div>
 
       <div className="col-md-12">

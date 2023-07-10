@@ -1,5 +1,5 @@
 import moment from "moment";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/CadastroFuncionario.css";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -151,22 +151,8 @@ export const CadastroFuncionario = () => {
   };
   const navigate = useNavigate();
 
-  /*Service.getFuncionarios().then(() => {
-    navigate("/Funcionarios");
-  });
-  
   const registrar = () => {
-    if (
-      funcionario &&
-      validate() &&
-      window.confirm(
-        "Deseja realmente cadastrar este Funcionário? " +
-          JSON.stringify(funcionario)
-      )
-    ) {*/
-
-  const registrar = () => {
-    if (funcionario) {
+    if (funcionario && validate()) {
       Service.getFuncionarios().then(() => {
         navigate("/Funcionarios");
       });
@@ -187,7 +173,7 @@ export const CadastroFuncionario = () => {
           ),
         })
           .then(() => {
-            window.alert("Atualiazado com sucesso");
+            window.alert("Atualizado com sucesso");
             navigate("/Funcionarios");
           })
           .catch((err) =>
@@ -331,11 +317,10 @@ export const CadastroFuncionario = () => {
             onChange={onChange}
             name="funcao"
           >
-            <option selected>Selecionar...</option>
-
-            <option>ADMIN</option>
-            <option>RECEPCIONISTA</option>
-            <option>AUXILIAR</option>
+            <option value="">Selecionar...</option>
+            <option value="ADMIN">Administrador</option>
+            <option value="RECEPCIONISTA">Recepcionista</option>
+            <option value="AUXILIAR">Auxiliar</option>
           </select>
         </div>
 
@@ -424,7 +409,7 @@ export const CadastroFuncionario = () => {
             onChange={onChange}
             name="estado"
           >
-            <option selected>Selecionar...</option>
+            <option value="">Selecionar...</option>
             <option>AC</option>
             <option>AL</option>
             <option>AP</option>

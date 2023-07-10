@@ -20,6 +20,32 @@ export const Service = {
   getMedicos: () => {
     return Service.api().get("/medico/dados?nome=");
   },
+
+  getMedicosPorNome: (nome: string) => {
+    return Service.api().get("/medico/dados?nome=" + nome);
+  },
+
+  getMedicosPorEspecialidade: (especialidade: string) => {
+    return Service.api().get(
+      "/consulta/medicos-disponiveis?especialidade=" + especialidade
+    );
+  },
+
+  getDatasDisponiveisPorMedico: (nome_medico: string) => {
+    return Service.api().get(
+      "/consulta/datas-disponiveis?nome_medico=" + nome_medico
+    );
+  },
+
+  getHorasValidas: (nome_medico: string, data_consulta: string) => {
+    return Service.api().get(
+      "/consulta/horas-validas?nome_medico=" +
+        nome_medico +
+        "&data_consulta=" +
+        data_consulta
+    );
+  },
+
   getFuncionarios: () => {
     return Service.api().get("/funcionario/dados");
   },
@@ -28,6 +54,10 @@ export const Service = {
   },
   getPacientes: () => {
     return Service.api().get("/paciente/dados");
+  },
+
+  getPacientesPorNome: (nome: string) => {
+    return Service.api().get("/paciente/dados?nome=" + nome);
   },
 
   PostPacientes: (paciente: IPaciente) => {
@@ -43,7 +73,7 @@ export const Service = {
   },
 
   deletePacientes: (idPaciente?: Number) => {
-    return Service.api().delete("paciente?id_paciente=" + idPaciente);
+    return Service.api().delete("/paciente?id_paciente=" + idPaciente);
   },
 
   deleteMedicos: (idMedico?: Number) => {
@@ -55,7 +85,7 @@ export const Service = {
   },
 
   PutPacientes: (paciente: IPaciente) => {
-    return Service.api().put("paciente?id_paciente=" + paciente.id, paciente);
+    return Service.api().put("/paciente?id_paciente=" + paciente.id, paciente);
   },
 
   PutMedicos: (medico: IMedico) => {
@@ -81,10 +111,10 @@ export const Service = {
     );
   },
 
-  PutConsulta: (consulta: IConsulta) => {
+  PutConsulta: (ControleConsulta: IConsulta) => {
     return Service.api().put(
-      "consulta?id_consulta=" + consulta.id_consulta,
-      consulta
+      "/consulta?id_consulta=" + ControleConsulta.id_consulta,
+      ControleConsulta
     );
   },
 
@@ -92,33 +122,57 @@ export const Service = {
     return Service.api().post("/consulta", consulta);
   },
 
-  getConsulta: () => {
-    return Service.api().get("/consulta/lista?data=05-07-2023");
+  /*getConsulta: (data: Date) => {
+    return Service.api().get("/consulta/lista?data=" + data);
+  },*/
+
+  getConsultaAtendimento: (id_consulta: number) => {
+    return Service.api().get(
+      "/consulta/atendimento?id_consulta=" + id_consulta
+    );
   },
 
-  getConsultaAtendimento: () => {
-    return Service.api().get("consulta/atendimento?data=");
+  getConsultaLista: (nome: string, data: string) => {
+    return Service.api().get("/consulta/lista?nome=" + nome + "&data=" + data);
   },
 
-  getConsultaLista: () => {
-    return Service.api().get("consulta/lista?nome=bruno&data=15/06/2023");
+  getConsultaDia: (dia: string) => {
+    return Service.api().get("/consulta/dia?data=" + dia);
   },
 
-  getConsultaDia: () => {
-    return Service.api().get("/consulta/dia?data=2023-07-06");
+  getIniciarConsulta: (id_consulta: string) => {
+    return Service.api().get("/iniciar=" + id_consulta);
   },
 
-  getConsultaConfirmacao: (consulta: IConsulta) => {
-    return Service.api().get("consulta/confirmacao?data=");
+  getIniciar: (id_consulta: number) => {
+    return Service.api().get("/consulta/iniciar?id_consulta=" + id_consulta);
+  },
+
+  getConsultaConfirmacao: (id_consulta: number) => {
+    return Service.api().get(
+      "/consulta/confirmacao?id_consulta=" + id_consulta
+    );
+  },
+
+  getIniciarAtendimento: (id_consulta: number) => {
+    return Service.api().get("/consulta/iniciar?id_consulta=" + id_consulta);
+  },
+
+  getConfirmacaoBoolean: (id_consulta: number) => {
+    return Service.api().get("/consulta/ligacao?id_consulta=" + id_consulta);
+  },
+
+  PutConsultaConfirmacao: (id_consulta?: number, confirmacao: boolean) => {
+    return Service.api().put(
+      `/consulta/confirmacao?id_consulta=${id_consulta}&confirmacao=${confirmacao}`
+    );
   },
 
   getMyUsuario: () => {
     return Service.api().get("/my/usuario");
   },
 
-  deleteConsulta: (consulta?: IConsulta) => {
-    return Service.api().delete(
-      "/consulta?id_consulta=" + consulta?.id_consulta
-    );
+  deleteConsulta: (idConsulta?: Number) => {
+    return Service.api().delete("/consulta?id_consulta=" + idConsulta);
   },
 };

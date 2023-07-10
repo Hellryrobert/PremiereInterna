@@ -1,3 +1,5 @@
+import { IConsulta } from "./IConsulta";
+
 export interface IProntuario {
   id_prontuario?: number;
   id_consulta?: number;
@@ -7,4 +9,5 @@ export interface IProntuario {
   prescricaoMedica?: string;
   examePrescritos?: string;
   file?: Blob;
+  consulta?: IConsulta;
 }

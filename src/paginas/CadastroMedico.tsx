@@ -11,8 +11,9 @@ import {
 } from "react";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import { IMedico } from "../Models/IMedico";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Service } from "../Service";
+
 export const CadastroMedico = () => {
   const location = useLocation();
   const [medico, setMedico] = useState<IMedico>({
@@ -46,14 +47,6 @@ export const CadastroMedico = () => {
       diasDisponiveis,
     }));
   };
-
-  /*const onChange = (ev: { target: { value: string } }) => {
-    setMedico({ ...medico, diasDisponiveis: ev.target.value.split(",") });
-  };
-
-  const diasDisponiveisArray = Array.isArray(medico?.diasDisponiveis)
-    ? medico.diasDisponiveis
-    : [medico?.diasDisponiveis];*/
 
   const handleChangeTel = (event: any) => {
     const Tel = event.target.value.replace(/\D/g, "");
@@ -157,15 +150,21 @@ export const CadastroMedico = () => {
       return false;
     }
 
-    if (medico?.senha == "" || medico?.senha == null) {
-      window.alert("O campo senha é obrigatório");
-      return false;
+    if (medico?.id ?? 0 > 0) {
+      return true;
     }
 
     return true;
   };
 
+  const navigate = useNavigate();
+
   const registrar = () => {
+    if (medico && validate()) {
+      Service.getMedicos().then(() => {
+        navigate("/Medico");
+      });
+    }
     if (
       medico &&
       validate() &&
@@ -181,7 +180,10 @@ export const CadastroMedico = () => {
       };
       if (medico?.id ?? 0 > 0) {
         Service.PutMedicos(postMedico)
-          .then(() => window.alert("Atualiazado com sucesso"))
+          .then(() => {
+            window.alert("Atualizado com sucesso");
+            navigate("/Medico");
+          })
           .catch((err) =>
             window.alert(
               err?.response?.data
@@ -191,7 +193,10 @@ export const CadastroMedico = () => {
           );
       } else {
         Service.PostMedicos(postMedico)
-          .then(() => window.alert("Cadastrado com sucesso"))
+          .then(() => {
+            window.alert("Cadastrado com sucesso");
+            navigate("/Medico");
+          })
           .catch((err) =>
             window.alert(
               err?.response?.data
@@ -248,7 +253,7 @@ export const CadastroMedico = () => {
             maxLength={6}
             minLength={6}
             name="crm_num"
-            type="number"
+            type="text"
             value={medico?.crm_num}
             className="form-control"
             id="inputCrm"
@@ -268,7 +273,7 @@ export const CadastroMedico = () => {
             id="inputCrmEstado"
             onChange={onChange}
           >
-            <option>Selecionar...</option>
+            <option value="">Selecionar...</option>
             <option>AC</option>
             <option>AL</option>
             <option>AP</option>
@@ -303,6 +308,8 @@ export const CadastroMedico = () => {
             Telefone
           </label>
           <input
+            maxLength={11}
+            minLength={11}
             name="telefone"
             type="text"
             value={medico?.telefone}
@@ -337,7 +344,7 @@ export const CadastroMedico = () => {
             id="inputEspecialidade"
             onChange={onChange}
           >
-            <option>Selecionar...</option>
+            <option value="">Selecionar...</option>
             <option>CARDIOLOGISTA</option>
             <option>DERMATOLOGISTA</option>
             <option>GINECOLOGISTA</option>
@@ -355,7 +362,7 @@ export const CadastroMedico = () => {
             id="inputNumeroSala"
             onChange={onChange}
           >
-            <option>Selecionar...</option>
+            <option value="">Selecionar...</option>
             <option>01</option>
             <option>02</option>
             <option>03</option>

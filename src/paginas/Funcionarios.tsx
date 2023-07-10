@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import moment from "moment";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/Funcionarios.css";
@@ -22,7 +23,6 @@ const Funcionarios = function () {
   }, []);
 
   const handlePesquisarPorNome = async () => {
-    debugger;
     const { data } = await Service.getFuncionariosPorNome(nomePesquisado);
     setListaFuncionarios(data);
   };
@@ -77,6 +77,9 @@ const Funcionarios = function () {
     <>
       <Cabecalho nomeTela="Dados Funcionários"></Cabecalho>
 
+      <br />
+      <br />
+
       <div className="row">
         <div className="col-md-3">
           <button onClick={() => encaminharParaCadastro()}>
@@ -84,7 +87,7 @@ const Funcionarios = function () {
             Novo Cadastro
           </button>
         </div>
-        <div className="col-md-3">
+        <div className="col-md-4">
           <label htmlFor="nome">Nome do Funcionário</label>
           <input
             id="nome"
@@ -92,19 +95,23 @@ const Funcionarios = function () {
             value={nomePesquisado}
             onChange={(e) => setNomePesquisado(e.target.value)}
           />
+        </div>
+        <div className="col-md-1">
           <button onClick={handlePesquisarPorNome}>Pesquisar</button>
         </div>
       </div>
 
       <br></br>
+      <br></br>
+      <br></br>
 
       <table border={1}>
         <thead>
           <tr>
-            <th>Nome Funcionário</th>
-            <th>Consultar dados</th>
-            <th>Alterar Funcionário</th>
-            <th>Excluir Funcionário</th>
+            <th style={{ width: "50%" }}>Nome Funcionário</th>
+            <th> Consultar </th>
+            <th> Alterar </th>
+            <th> Excluir </th>
           </tr>
         </thead>
 

@@ -71,7 +71,7 @@ export const Login = () => {
                   value={Usuario}
                   onChange={onChangeUsuario}
                 />
-                <label htmlFor="inputEmail">Email</label>
+                <label htmlFor="inputEmail">Login</label>
               </div>
               <div className="form-floating">
                 <input

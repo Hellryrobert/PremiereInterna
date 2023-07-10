@@ -1,34 +1,31 @@
-import { DadosConsulta } from "./Componentes/DadosConsulta";
-import { CadastroPaciente } from "../paginas/CadastroPaciente";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import { useEffect, useState, ChangeEvent } from "react";
 import { IConsulta } from "../Models/IConsulta";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Service } from "../Service";
-import { IFuncionario } from "../Models/IFuncionario";
-import { IPaciente } from "../Models/IPaciente";
-import { IMedico } from "../Models/IMedico";
-type ConsultaAtendimento = {
+import { useConfirmacao } from "../ConfirmacaoContext";
+
+type ConsultaConfirmacao = {
   id_consulta: number;
   nome_medico: string;
   especialidade: string;
-  sala: string;
   data_consulta: any;
   hora_consulta: any;
   retorno_consulta: string;
   nome_paciente: string;
-  plano_saude: string;
-  num_plano: string;
-  validade_plano: any;
+  telefone_paciente: string;
   valor_consulta: number;
+  plano_saude: string;
   nome_funcionario: string;
+  confirmacao: any;
 };
 
-export const AbrirAtendimento = () => {
+export const VisualizarConsulta = () => {
   const navigate = useNavigate();
   const { id_consulta } = useParams();
   const [ControleConsulta, setControleConsulta] =
-    useState<ConsultaAtendimento>();
+    useState<ConsultaConfirmacao>();
+  const { setConfirmacao, setConfirmacaoIdConsulta } = useConfirmacao();
 
   const confirmar = (id_consulta?: number) => {
     if (window.confirm("Deseja realmente confirmar esta consulta?")) {
@@ -45,13 +42,8 @@ export const AbrirAtendimento = () => {
     }
   };
 
-  const encaminharParaConfirmarAtendimento = () => {
-    if (
-      window.confirm(
-        "O médico será informado que o paciente está disponível para o atendimento. Você confirma?"
-      )
-    )
-      return navigate(-1);
+  const encaminharParaRemarcarConsulta = (infoConsulta?: IConsulta) => {
+    return navigate("/RemarcarConsulta/" + id_consulta);
   };
 
   const apagar = (id_consulta?: Number) => {
@@ -69,7 +61,7 @@ export const AbrirAtendimento = () => {
 
   useEffect(() => {
     document.title = "Dados da Consulta";
-    Service.getConsultaAtendimento(Number(id_consulta)).then((result) => {
+    Service.getConsultaConfirmacao(Number(id_consulta)).then((result) => {
       setControleConsulta(result.data);
     });
   }, []);
@@ -78,9 +70,8 @@ export const AbrirAtendimento = () => {
     <>
       <Cabecalho nomeTela=""></Cabecalho>
       <div className="col-12 navegacao">
-        <h1>Abrir Atendimento</h1>
+        <h1>Dados Consulta</h1>
       </div>
-
       <form className="row g-3">
         <div className="col-md-4">
           <label htmlFor="inputDataConsulta" className="form-label">
@@ -124,7 +115,7 @@ export const AbrirAtendimento = () => {
           />
         </div>
 
-        <div className="col-md-4">
+        <div className="col-md-6">
           <label htmlFor="inputNomeMedico" className="form-label">
             Nome do Médico
           </label>
@@ -138,7 +129,7 @@ export const AbrirAtendimento = () => {
           />
         </div>
 
-        <div className="col-md-4">
+        <div className="col-md-6">
           <label htmlFor="inputEspecialidade" className="form-label">
             Especialidade
           </label>
@@ -148,20 +139,6 @@ export const AbrirAtendimento = () => {
             value={ControleConsulta?.especialidade}
             className="form-control"
             id="inputEspecialidade"
-            disabled
-          />
-        </div>
-
-        <div className="col-md-4">
-          <label htmlFor="inputSala" className="form-label">
-            Sala
-          </label>
-          <input
-            type="text"
-            name="sala"
-            value={ControleConsulta?.sala}
-            className="form-control"
-            id="inputSala"
             disabled
           />
         </div>
@@ -181,6 +158,20 @@ export const AbrirAtendimento = () => {
         </div>
 
         <div className="col-md-6">
+          <label htmlFor="inputTelefone" className="form-label">
+            Telefone
+          </label>
+          <input
+            type="text"
+            name="telefone"
+            value={ControleConsulta?.telefone_paciente}
+            className="form-control"
+            id="inputTelefone"
+            disabled
+          />
+        </div>
+
+        <div className="col-md-6">
           <label htmlFor="inputPS" className="form-label">
             Plano de Saúde
           </label>
@@ -194,35 +185,7 @@ export const AbrirAtendimento = () => {
           />
         </div>
 
-        <div className="col-md-4">
-          <label htmlFor="inputNumPlano" className="form-label">
-            Número do plano de saúde
-          </label>
-          <input
-            type="text"
-            name="num_plano"
-            value={ControleConsulta?.num_plano}
-            className="form-control"
-            id="inputNumPlano"
-            disabled
-          />
-        </div>
-
-        <div className="col-md-4">
-          <label htmlFor="inputValPlano" className="form-label">
-            Validade do plano de saúde
-          </label>
-          <input
-            type="text"
-            name="validade_plano"
-            value={ControleConsulta?.validade_plano}
-            className="form-control"
-            id="inputValPlano"
-            disabled
-          />
-        </div>
-
-        <div className="col-md-4">
+        <div className="col-md-6">
           <label htmlFor="inputValor" className="form-label">
             Valor da consulta
           </label>
@@ -240,10 +203,10 @@ export const AbrirAtendimento = () => {
           <button
             id="btncontato"
             className="btn btn-info rounded-pill px-3"
-            onClick={() => encaminharParaConfirmarAtendimento()}
+            onClick={() => confirmar(ControleConsulta?.id_consulta)}
             type="button"
           >
-            Autorização do Plano
+            Confirmar
           </button>
         </div>
 
@@ -251,10 +214,10 @@ export const AbrirAtendimento = () => {
           <button
             id="btncontato"
             className="btn btn-info rounded-pill px-3"
-            onClick={() => encaminharParaConfirmarAtendimento()}
-            type="button"
+            onClick={() => encaminharParaRemarcarConsulta()}
           >
-            Pagamento Realizado
+            {" "}
+            Remarcar
           </button>
         </div>
 
@@ -266,6 +229,17 @@ export const AbrirAtendimento = () => {
             type="button"
           >
             Cancelar
+          </button>
+        </div>
+
+        <div className="col-4">
+          <button
+            id="btncontato"
+            className="btn btn-info rounded-pill px-3"
+            onClick={() => navigate(-1)}
+            type="button"
+          >
+            Voltar
           </button>
         </div>
       </form>

@@ -7,7 +7,7 @@ export const Admin = () => {
   }, []);
   return (
     <>
-      <Cabecalho nomeTela="Admin"></Cabecalho>
+      <Cabecalho nomeTela="Administrador"></Cabecalho>
       <div className="row">
         <div className="col-12">
           <button id="btncontato" className="btn btn-info rounded-pill px-3">

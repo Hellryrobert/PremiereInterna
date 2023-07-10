@@ -1,14 +1,11 @@
 //import { DadosPaciente } from "./Componentes/DadosPaciente";
 import moment from "moment";
-import { json, useLocation } from "react-router-dom";
+import { json, useLocation, useNavigate } from "react-router-dom";
 import { Cabecalho } from "./Componentes/Cabecalho";
 import "./Css/CadastroPaciente.css";
 import { ChangeEvent, useEffect, useState } from "react";
-//import React, { Fragment } from "react";
 import { IPaciente } from "../Models/IPaciente";
 import { Service } from "../Service";
-//import { Utils } from "../utils";
-//import { DadosPaciente } from "./Componentes/DadosPaciente";
 
 export const CadastroPaciente = () => {
   const location = useLocation();
@@ -137,11 +134,20 @@ export const CadastroPaciente = () => {
       return false;
     }
 
+    if (paciente?.id ?? 0 > 0) {
+      return true;
+    }
+
     return true;
   };
+  const navigate = useNavigate();
 
   const registrar = () => {
-    debugger;
+    if (paciente && validate()) {
+      Service.getPacientes().then(() => {
+        navigate("/Paciente");
+      });
+    }
     if (
       paciente &&
       validate() &&
@@ -156,36 +162,25 @@ export const CadastroPaciente = () => {
       };
       if (paciente?.id ?? 0 > 0) {
         Service.PutPacientes(formattedPaciente)
-          .then(() => window.alert("Atualiazado com sucesso"))
+          .then(() => {
+            window.alert("Atualizado com sucesso");
+            navigate("/Paciente");
+          })
           .catch((err) =>
             window.alert("Erro:" + JSON.stringify(err?.response?.data))
           );
       } else {
         Service.PostPacientes(formattedPaciente)
-          .then(() => window.alert("Cadastrado com sucesso"))
+          .then(() => {
+            window.alert("Cadastrado com sucesso");
+            navigate("/Paciente");
+          })
           .catch((err) =>
             window.alert("Erro:" + JSON.stringify(err?.response?.data))
           );
       }
     }
   };
-  /*const p1 = {
-        ...paciente,
-        data_nascimento: moment(paciente.data_nascimento).format("DD/MM/YYYY"),
-        validade_plano: moment(paciente.validade_plano).format("DD/MM/YYYY"),
-      };
-      if (paciente?.id ?? 0 > 0) {
-        Service.PutPacientes(p1)
-          .then(() => window.alert("Atualiazado com sucesso"))
-          .catch((err) => Utils.displayErrorMessage(err));
-      } else {
-        Service.PostPacientes(p1)
-          .then(() => window.alert("Cadastrado com sucesso"))
-          .catch((err) => Utils.displayErrorMessage(err));
-      }
-    }
-  };*/
-  //Fragment key={paciente?.id}
 
   return (
     <>
@@ -399,7 +394,7 @@ export const CadastroPaciente = () => {
             onChange={onChange}
             onBlur={onChange}
           >
-            <option defaultValue="">Selecionar...</option>
+            <option value="">Selecionar...</option>
             <option>AC</option>
             <option>AL</option>
             <option>AP</option>
@@ -457,7 +452,7 @@ export const CadastroPaciente = () => {
             onChange={onChange}
             onBlur={onChange}
           >
-            <option defaultValue="">Selecionar...</option>
+            <option value="">Selecionar...</option>
             <option>São Camilo</option>
             <option>Unimed</option>
             <option>Bradesco Saúde</option>
@@ -515,16 +510,3 @@ export const CadastroPaciente = () => {
     </>
   );
 };
-
-/*      <DadosPaciente
-        onPacienteChange={onPacienteChange}
-        paciente={paciente}
-      ></DadosPaciente>
-      <div className="col-12">
-        <button type="submit" className="btn btn-primary" onClick={registrar}>
-          Registrar
-        </button>
-      </div>
-    </>
-  );
-};*/
